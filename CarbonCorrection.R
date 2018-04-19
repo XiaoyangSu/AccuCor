@@ -17,7 +17,7 @@ SulfurNaturalAbundace <- c(0.9493, 0.00762, 0.0429)
 
 ###Please make sure these parameters are accurate.#
 C13Purity <- 0.99
-Resolution <- 100000
+Resolution <- 140000
 ResDefAt <- 200
 ReportPoolSize <- TRUE
 #For Exactive, the Resolution is 100000, defined at Mw 200#
@@ -25,33 +25,35 @@ ReportPoolSize <- TRUE
 #Please make sure the paths below are correct. 
 #Make sure to use / in the paths
 
-InputFile <- "D:/Sorcerers/Princeton/R/Correction Release/C_Sample_Input.xlsx"
-InputSheetName <- "13C"
-MetaboliteList <- read.csv("D:/Sorcerers/Princeton/R/Correction Release/KNOWNS.csv", header = TRUE, check.names = FALSE)
+InputFile <- "C:/Users/Li Chen/Desktop/0322Io436and437HILIC.xlsx"
+InputSheetName <- "Sheet1"
 
-InputDF <- read.xlsx(InputFile, InputSheetName, header = FALSE, check.names=FALSE, stringsAsFactors=FALSE)
+InputDF <- read.xlsx(InputFile, InputSheetName, header = TRUE, check.names=FALSE, stringsAsFactors=FALSE)
+#InputDF <- InputTable %>% filter(isotopeLabel=="C12 PARENT") %>% 
+#  mutate(CompoundLabel=paste(compound," (",round(medRt,2),"min)",sep=""))
+#InputDF <- InputDF[,c(ncol(InputDF,))]
+
 InputDF[,1] <- as.character(InputDF[,1])
-OutputMatrix <- matrix(0, ncol=(ncol(InputDF)-1), nrow=0)
-OutputPercentageMatrix <- matrix(0, ncol=(ncol(InputDF)-1), nrow=0)
-OutputPoolBefore <- matrix(0, ncol=(ncol(InputDF)-1), nrow=0)
-OutputPoolAfter <- matrix(0, ncol=(ncol(InputDF)-1), nrow=0)
+OutputMatrix <- matrix(0, ncol=(ncol(InputDF)-14), nrow=0)
+OutputPercentageMatrix <- matrix(0, ncol=(ncol(InputDF)-14), nrow=0)
+OutputPoolBefore <- matrix(0, ncol=(ncol(InputDF)-14), nrow=0)
+OutputPoolAfter <- matrix(0, ncol=(ncol(InputDF)-14), nrow=0)
 OutputCompound <- NULL
 OutputLabel <- NULL
 OutputPoolCompound <- NULL
-names(InputDF) <- sapply(InputDF[1,], as.character)
-names(InputDF)[1] <- "Compound"
+names(InputDF)[9] <- "Compound"
 InputDF$Label <- rep(NA,nrow(InputDF))
 
 if.not.null <- function(x) if(!is.null(x)) x else 0
 
 for (i in 1:nrow(InputDF)) {
-  if(startsWith(InputDF[i,1], "C12")) {
+  if(startsWith(InputDF[i,8], "C12")) {
     InputDF$Label[i]=0
-    InputDF[i,1] <- InputDF[i-1,1]
+    InputDF$Compound[i]=paste(InputDF[i,10]," (",round(InputDF[i,6],2),"min)",sep="")
   }
-  else if(startsWith(InputDF[i,1], "C13")) {
-    InputDF$Label[i] <- unlist(strapply(InputDF[i,1], "(-)(\\d*)", ~ as.numeric(if (nchar(..2)) ..2)))
-    InputDF[i,1] <- InputDF[i-1,1]  }
+  else if(startsWith(InputDF[i,8], "C13")) {
+    InputDF$Label[i] <- unlist(strapply(InputDF[i,8], "(-)(\\d*)", ~ as.numeric(if (nchar(..2)) ..2)))
+    InputDF$Compound[i] <- InputDF$Compound[i-1]  }
 }
 
 IsotopeCorrection <- function(formula, datamatrix, label) {
@@ -147,16 +149,16 @@ IsotopeCorrection <- function(formula, datamatrix, label) {
 }
 
 for (i in unique(InputDF$Compound)) {
-  Formula=as.character(MetaboliteList$formula[MetaboliteList$compound==i])
-  #Formula=as.character(MetaboliteList$formula[grep(paste("^",i,"$",sep=""), MetaboliteList$compound)])
+  CurrentMetabolite <- filter(InputDF, Compound==i)
+  Formula=CurrentMetabolite[1,11]
   if(length(Formula)==0) {
     print(paste("The formula of",i,"is unknown",sep=" "))
     break
   }
-  CurrentMetabolite <- filter(InputDF, Compound==i)
-  DataMatrix <- data.matrix(CurrentMetabolite[2:nrow(CurrentMetabolite),2:(ncol(CurrentMetabolite)-1)])
+
+  DataMatrix <- data.matrix(CurrentMetabolite[,15:(ncol(CurrentMetabolite)-1)])
   DataMatrix[is.na(DataMatrix)] <- 0
-  Corrected <- IsotopeCorrection(Formula, DataMatrix, CurrentMetabolite$Label[2:nrow(CurrentMetabolite)])
+  Corrected <- IsotopeCorrection(Formula, DataMatrix, CurrentMetabolite$Label)
   CorrectedPercentage <- scale(Corrected,scale=colSums(Corrected),center=FALSE)
   OutputMatrix <- rbind(OutputMatrix, Corrected)
   OutputPercentageMatrix <- rbind(OutputPercentageMatrix, CorrectedPercentage)
@@ -171,11 +173,11 @@ OutputDF <- data.frame(OutputCompound, OutputLabel, OutputMatrix)
 OutputPercentageDF <- data.frame(OutputCompound, OutputLabel, OutputPercentageMatrix)
 OutputPoolBeforeDF <- data.frame(OutputPoolCompound, OutputPoolBefore)
 OutputPoolAfterDF <- data.frame(OutputPoolCompound, OutputPoolAfter)
-names(OutputDF) <- c("Compound", "Label", names(InputDF)[2:(length(names(InputDF))-1)])
+names(OutputDF) <- c("Compound", "Label", names(InputDF)[15:(length(names(InputDF))-1)])
 names(OutputPercentageDF) <- names(OutputDF)
-names(OutputPoolBeforeDF) <- c("Compound", names(InputDF)[2:(length(names(InputDF))-1)])
-names(OutputPoolAfterDF) <- c("Compound", names(InputDF)[2:(length(names(InputDF))-1)])
+names(OutputPoolBeforeDF) <- c("Compound", names(InputDF)[15:(length(names(InputDF))-1)])
+names(OutputPoolAfterDF) <- c("Compound", names(InputDF)[15:(length(names(InputDF))-1)])
 
-write.xlsx2(OutputDF, file=InputFile, sheetName = paste(InputSheetName,"Corrected",sep="_"), row.names=FALSE, append=TRUE)
+write.xlsx2(OutputDF, file=InputFile, sheetName = "Corrected", row.names=FALSE, append=TRUE)
 write.xlsx2(OutputPercentageDF, file=InputFile, sheetName = "Normalized", row.names=FALSE, append=TRUE)
 write.xlsx2(OutputPoolAfterDF, file=InputFile, sheetName = "Pool Size", row.names=FALSE, append=TRUE)
