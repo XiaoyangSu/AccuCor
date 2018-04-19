@@ -1,13 +1,14 @@
 ###Please note that this code only deals with carbon labeling experiment.
 ###Please use other version of correction codes for other experiments.
-#Please make sure you have the packages below installed.### 
+#Please make sure you have the packages below installed.###
 #Use install.packages("") to install packages###
 
-require(gsubfn)
-require(nnls)
-require(dplyr)
-require(gdata)
-require(xlsx)
+library(gsubfn)
+library(nnls)
+library(dplyr)
+library(gdata)
+library(xlsx)
+library(stringr)
 
 CarbonNaturalAbundace <- c(0.9893, 0.0107)
 HydrogenNaturalAbundace <- c(0.999885, 0.000115)
@@ -22,39 +23,14 @@ ResDefAt <- 200
 ReportPoolSize <- TRUE
 #For Exactive, the Resolution is 100000, defined at Mw 200#
 
-#Please make sure the paths below are correct. 
+#Please make sure the paths below are correct.
 #Make sure to use / in the paths
 
-InputFile <- "C:/Users/Li Chen/Desktop/0322Io436and437HILIC.xlsx"
-InputSheetName <- "Sheet1"
+InputFile <- "test/JCGC_test_2.xlsx"
+InputSheetName <- "JCGC_test"
 
 InputDF <- read.xlsx(InputFile, InputSheetName, header = TRUE, check.names=FALSE, stringsAsFactors=FALSE)
-#InputDF <- InputTable %>% filter(isotopeLabel=="C12 PARENT") %>% 
-#  mutate(CompoundLabel=paste(compound," (",round(medRt,2),"min)",sep=""))
-#InputDF <- InputDF[,c(ncol(InputDF,))]
 
-InputDF[,1] <- as.character(InputDF[,1])
-OutputMatrix <- matrix(0, ncol=(ncol(InputDF)-14), nrow=0)
-OutputPercentageMatrix <- matrix(0, ncol=(ncol(InputDF)-14), nrow=0)
-OutputPoolBefore <- matrix(0, ncol=(ncol(InputDF)-14), nrow=0)
-OutputPoolAfter <- matrix(0, ncol=(ncol(InputDF)-14), nrow=0)
-OutputCompound <- NULL
-OutputLabel <- NULL
-OutputPoolCompound <- NULL
-names(InputDF)[9] <- "Compound"
-InputDF$Label <- rep(NA,nrow(InputDF))
-
-if.not.null <- function(x) if(!is.null(x)) x else 0
-
-for (i in 1:nrow(InputDF)) {
-  if(startsWith(InputDF[i,8], "C12")) {
-    InputDF$Label[i]=0
-    InputDF$Compound[i]=paste(InputDF[i,10]," (",round(InputDF[i,6],2),"min)",sep="")
-  }
-  else if(startsWith(InputDF[i,8], "C13")) {
-    InputDF$Label[i] <- unlist(strapply(InputDF[i,8], "(-)(\\d*)", ~ as.numeric(if (nchar(..2)) ..2)))
-    InputDF$Compound[i] <- InputDF$Compound[i-1]  }
-}
 
 IsotopeCorrection <- function(formula, datamatrix, label) {
   
@@ -67,6 +43,7 @@ IsotopeCorrection <- function(formula, datamatrix, label) {
   CorrectionLimit <- rep(0,6)
   names(CorrectionLimit) <- c("H2","N15","O17","O18","S33","S34")
   
+  if.not.null <- function(x) if(!is.null(x)) x else 0
   AtomNumber["C"] <- if.not.null(unlist(strapply(formula, "(C)(\\d*)", ~ as.numeric(if (nchar(..2)) ..2 else 1))))
   AtomNumber["H"] <- if.not.null(unlist(strapply(formula, "(H)(\\d*)", ~ as.numeric(if (nchar(..2)) ..2 else 1))))
   AtomNumber["N"] <- if.not.null(unlist(strapply(formula, "(N)(\\d*)", ~ as.numeric(if (nchar(..2)) ..2 else 1))))
@@ -81,7 +58,7 @@ IsotopeCorrection <- function(formula, datamatrix, label) {
   ExpMatrix <- matrix(0, ncol=ncol(datamatrix), nrow=AtomNumber["C"]+1)
   CorrectedMatrix <- matrix(0, ncol=ncol(datamatrix), nrow=AtomNumber["C"]+1)
   for (i in 1:length(label)) {
-    ExpMatrix[label[i]+1,] <- datamatrix[i,] 
+    ExpMatrix[label[i]+1,] <- datamatrix[i,]
   }
   
   
@@ -119,7 +96,7 @@ IsotopeCorrection <- function(formula, datamatrix, label) {
       }
       else {
         for (m in 1:(AtomNumber["C"]-k+1)) {
-          OxygenMatrix[(m+k),m] <- OxygenMatrix[(m+k),m] + dmultinom(c((AtomNumber["O"]-i-j),i,j), AtomNumber["O"], OxygenNaturalAbundace)      
+          OxygenMatrix[(m+k),m] <- OxygenMatrix[(m+k),m] + dmultinom(c((AtomNumber["O"]-i-j),i,j), AtomNumber["O"], OxygenNaturalAbundace)
         }
       }
     }
@@ -133,14 +110,14 @@ IsotopeCorrection <- function(formula, datamatrix, label) {
       }
       else {
         for (m in 1:(AtomNumber["C"]-k+1)) {
-          SulfurMatrix[(m+k),m] <- SulfurMatrix[(m+k),m] + dmultinom(c((AtomNumber["S"]-i-j),i,j), AtomNumber["S"], SulfurNaturalAbundace)      
+          SulfurMatrix[(m+k),m] <- SulfurMatrix[(m+k),m] + dmultinom(c((AtomNumber["S"]-i-j),i,j), AtomNumber["S"], SulfurNaturalAbundace)
         }
       }
     }
   }
   
   for(i in 1:ncol(datamatrix)) {
-    CorrectedMatrix[,i] <- coef(nnls(SulfurMatrix %*% OxygenMatrix %*% NitrogenMatrix %*% 
+    CorrectedMatrix[,i] <- coef(nnls(SulfurMatrix %*% OxygenMatrix %*% NitrogenMatrix %*%
                                        HydrogenMatrix %*% CarbonMatrix %*% PurityMatrix, ExpMatrix[,i]))
   }
   
@@ -148,36 +125,74 @@ IsotopeCorrection <- function(formula, datamatrix, label) {
   
 }
 
-for (i in unique(InputDF$Compound)) {
-  CurrentMetabolite <- filter(InputDF, Compound==i)
-  Formula=CurrentMetabolite[1,11]
-  if(length(Formula)==0) {
-    print(paste("The formula of",i,"is unknown",sep=" "))
-    break
+
+CarbonCorrection <- function(InputDF, ColumnsToSkip=NULL) {
+  # Remove columns that are not needed
+  if(is.null(ColumnsToSkip)) {
+    ColumnsToSkip = c(
+      "label", "metaGroupId", "groupId", "goodPeakCount", "medMz", "medRt", 
+      "maxQuality", "isotopeLabel", "compoundId", "expectedRtDiff", "ppmDiff",
+      "parent", "junk"
+    )
   }
+  keep_col_nums <- which(!(tolower(names(InputDF)) %in% tolower(ColumnsToSkip)))
+  formula_col_num <- which(tolower(names(InputDF)) == 'formula')
+  formula_col_name <- names(InputDF)[formula_col_num]
+  compound_col_num <- which(tolower(names(InputDF)) == 'compound')
+  compound_col_name <- names(InputDF)[compound_col_num]
+  sample_col_names <- names(InputDF)[which(!(tolower(names(InputDF)) %in% tolower(c(ColumnsToSkip, "compound", "formula"))))] 
+  # Generate label column as incremental index
+  isotope_label_col_num <- which(tolower(names(InputDF)) == 'isotopelabel')
+  isotope_label_col_name <- names(InputDF)[isotope_label_col_num]
+  
+  InputDF <- InputDF %>% 
+    mutate(label_idx = str_replace(UQ(as.name(isotope_label_col_name)), "C13-label-", "")) %>% 
+    mutate(label_idx = str_replace(label_idx, "C12 PARENT", "0")) %>%
+    mutate(label_idx = as.numeric(label_idx))
+  
+  for (i in unique(InputDF[,compound_col_num])) {
+    CurrentMetabolite <- filter(InputDF, UQ(as.name(compound_col_name))==i)
+    Formula=CurrentMetabolite[1, formula_col_num]
+    if(length(Formula)==0 || is.na(Formula)) {
+      print(paste("The formula of",i,"is unknown",sep=" "))
+      break
+    }
+    DataMatrix <- data.matrix(CurrentMetabolite %>%
+                                select(keep_col_nums) %>%
+                                select(-UQ(as.name(compound_col_name)),
+                                       -UQ(as.name(formula_col_name)))
+    )
+    DataMatrix[is.na(DataMatrix)] <- 0
+    Corrected <- IsotopeCorrection(Formula, DataMatrix, CurrentMetabolite$label_idx)
+    CorrectedPercentage <- scale(Corrected,scale=colSums(Corrected),center=FALSE)
+    OutputMatrix <- rbind(OutputMatrix, Corrected)
+    OutputPercentageMatrix <- rbind(OutputPercentageMatrix, CorrectedPercentage)
+    OutputPoolBefore <- rbind(OutputPoolBefore, colSums(DataMatrix))
+    OutputPoolAfter <- rbind(OutputPoolAfter, colSums(Corrected))
+    OutputCompound <- append(OutputCompound, rep(i,nrow(Corrected)))
+    OutputLabel <- append(OutputLabel, c(0:(nrow(Corrected)-1)))
+    OutputPoolCompound <- append(OutputPoolCompound, i)
+  }
+  
+  OutputDF <- data.frame(OutputCompound, OutputLabel, OutputMatrix)
+  OutputPercentageDF <- data.frame(OutputCompound, OutputLabel, OutputPercentageMatrix)
+  OutputPoolBeforeDF <- data.frame(OutputPoolCompound, OutputPoolBefore)
+  OutputPoolAfterDF <- data.frame(OutputPoolCompound, OutputPoolAfter)
+  names(OutputDF) <- c("Compound", "Label", sample_col_names)
+  names(OutputPercentageDF) <- names(OutputDF)
+  names(OutputPoolBeforeDF) <- c("Compound", sample_col_names)
+  names(OutputPoolAfterDF) <- c("Compound", sample_col_names)
+  
+  return(list("Corrected" = OutputDF,
+              "Normalized" = OutputPercentageDF,
+              "PoolBeforeDF" = OutputPoolBeforeDF,
+              "PoolAfterDF" = OutputPoolAfterDF))
+}
 
-  DataMatrix <- data.matrix(CurrentMetabolite[,15:(ncol(CurrentMetabolite)-1)])
-  DataMatrix[is.na(DataMatrix)] <- 0
-  Corrected <- IsotopeCorrection(Formula, DataMatrix, CurrentMetabolite$Label)
-  CorrectedPercentage <- scale(Corrected,scale=colSums(Corrected),center=FALSE)
-  OutputMatrix <- rbind(OutputMatrix, Corrected)
-  OutputPercentageMatrix <- rbind(OutputPercentageMatrix, CorrectedPercentage)
-  OutputPoolBefore <- rbind(OutputPoolBefore, colSums(DataMatrix))
-  OutputPoolAfter <- rbind(OutputPoolAfter, colSums(Corrected))
-  OutputCompound <- append(OutputCompound, rep(i,nrow(Corrected)))
-  OutputLabel <- append(OutputLabel, c(0:(nrow(Corrected)-1)))
-  OutputPoolCompound <- append(OutputPoolCompound, i)
-} 
+OutputFile <- "test/JCGC_test_2_corrected.xlsx"
+OutputDataFrames <- CarbonCorrection(InputDF)
 
-OutputDF <- data.frame(OutputCompound, OutputLabel, OutputMatrix)
-OutputPercentageDF <- data.frame(OutputCompound, OutputLabel, OutputPercentageMatrix)
-OutputPoolBeforeDF <- data.frame(OutputPoolCompound, OutputPoolBefore)
-OutputPoolAfterDF <- data.frame(OutputPoolCompound, OutputPoolAfter)
-names(OutputDF) <- c("Compound", "Label", names(InputDF)[15:(length(names(InputDF))-1)])
-names(OutputPercentageDF) <- names(OutputDF)
-names(OutputPoolBeforeDF) <- c("Compound", names(InputDF)[15:(length(names(InputDF))-1)])
-names(OutputPoolAfterDF) <- c("Compound", names(InputDF)[15:(length(names(InputDF))-1)])
 
-write.xlsx2(OutputDF, file=InputFile, sheetName = "Corrected", row.names=FALSE, append=TRUE)
-write.xlsx2(OutputPercentageDF, file=InputFile, sheetName = "Normalized", row.names=FALSE, append=TRUE)
-write.xlsx2(OutputPoolAfterDF, file=InputFile, sheetName = "Pool Size", row.names=FALSE, append=TRUE)
+write.xlsx2(OutputDataFrames$Corrected, file=OutputFile, sheetName = "Corrected", row.names=FALSE, append=TRUE)
+write.xlsx2(OutputDataFrames$Normalized, file=OutputFile, sheetName = "Normalized", row.names=FALSE, append=TRUE)
+write.xlsx2(OutputDataFrames$PoolAfterDF, file=OutputFile, sheetName = "Pool Size", row.names=FALSE, append=TRUE)
