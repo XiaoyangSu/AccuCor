@@ -4,15 +4,18 @@
 \alias{carbon_correction}
 \title{Natural Abundance correction for Carbon labeled samples}
 \usage{
-carbon_correction(InputFile, InputSheetName = "Sheet1",
+carbon_correction(path, sheet = NULL, output_path = NULL,
   ColumnsToSkip = NULL, Resolution, ResDefAt, C13Purity = 0.99,
   ReportPoolSize = TRUE)
 }
 \arguments{
-\item{InputFile}{Input xlsx file.}
+\item{path}{Path to xlsx file.}
 
-\item{InputSheetName}{Name of sheet in xlsx file with columns 'compound',
+\item{sheet}{Name of sheet in xlsx file with columns 'compound',
 'formula', 'isotopelabel', and one column per sample.}
+
+\item{output_path}{Path to output file, default is input path with
+`_corrected` appended. If `FALSE` then no output file is written.}
 
 \item{ColumnsToSkip}{Specify column heading to skip. All other columns not
 named 'compound', 'formula', and 'isotopelabel' will be assumed to be

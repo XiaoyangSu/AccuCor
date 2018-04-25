@@ -15,9 +15,8 @@ Imports:
     gsubfn,
     nnls,
     dplyr,
-    gdata,
     stringr,
     readxl,
     rlang,
-    magrittr
+    writexl
 RoxygenNote: 6.0.1

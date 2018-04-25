@@ -4,13 +4,12 @@
 \alias{read_elmaven_xlsx}
 \title{Natural Abundance correction for Carbon labeled samples}
 \usage{
-read_elmaven_xlsx(InputFile, InputSheetName = "Sheet1",
-  ColumnsToSkip = NULL, ...)
+read_elmaven_xlsx(path, sheet = NULL, ColumnsToSkip = NULL, ...)
 }
 \arguments{
-\item{InputFile}{Input xlsx file.}
+\item{path}{Path to xlsx file.}
 
-\item{InputSheetName}{Name of sheet in xlsx file with columns 'compound',
+\item{sheet}{Name of sheet in xlsx file with columns 'compound',
 'formula', 'isotopelabel', and one column per sample.}
 
 \item{ColumnsToSkip}{Specify column heading to skip. All other columns not
@@ -20,8 +19,9 @@ sample names.}
 \item{\dots}{Pass additional parameters to readxl::read_excel}
 }
 \value{
-Dataframe with columns 'compound', 'formula', 'isotope_label',
-     'label_index', followed by columns for each sample.
+List with two dataframes, "original" which is result of read_excel
+      and "cleaned", which is a dataframe with columns 'compound', 'formula',
+      'isotope_label', label_index', followed by columns for each sample.
 }
 \description{
 Natural Abundance correction for Carbon labeled samples

@@ -10,7 +10,6 @@
 #' @importFrom rlang .data
 #' @return Named list of matrices: 'Corrected', 'Normalized',
 #'      'PoolBeforeDF', and 'PoolAfterDF'.
-#' @export
 #' @examples
 #' \dontrun{
 #' carbon_correction("ExcelFile", Resolution=100000, ResDefAt=200)
@@ -117,9 +116,11 @@ IsotopeCorrection <- function(formula, datamatrix, label, Resolution, ResDefAt,
 
 #' Natural Abundance correction for Carbon labeled samples
 #'
-#' @param InputFile Input xlsx file.
-#' @param InputSheetName Name of sheet in xlsx file with columns 'compound',
+#' @param path Path to xlsx file.
+#' @param sheet Name of sheet in xlsx file with columns 'compound',
 #'      'formula', 'isotopelabel', and one column per sample.
+#' @param output_path Path to output file, default is input path with
+#'      `_corrected` appended. If `FALSE` then no output file is written.
 #' @param ColumnsToSkip Specify column heading to skip. All other columns not
 #'      named 'compound', 'formula', and 'isotopelabel' will be assumed to be
 #'      sample names.
@@ -135,12 +136,11 @@ IsotopeCorrection <- function(formula, datamatrix, label, Resolution, ResDefAt,
 #' \dontrun{
 #' carbon_correction("ExcelFile", Resolution=100000, ResDefAt=200)
 #' }
-carbon_correction <- function(InputFile, InputSheetName='Sheet1', ColumnsToSkip=NULL,
-                              Resolution, ResDefAt, C13Purity=0.99, ReportPoolSize=TRUE) {
+carbon_correction <- function(path, sheet = NULL, output_path = NULL, ColumnsToSkip = NULL,
+                              Resolution, ResDefAt, C13Purity = 0.99, ReportPoolSize = TRUE) {
 
-  InputDF <- read_elmaven_xlsx(InputFile, InputSheetName)
-
-  sample_col_names <- names(InputDF)[which(!(tolower(names(InputDF)) %in%
+  input_data <- read_elmaven_xlsx(path = path, sheet = sheet)
+  sample_col_names <- names(input_data$cleaned)[which(!(tolower(names(input_data$cleaned)) %in%
                                                tolower(c("compound", "formula", "isotope_label", "label_index"))))]
 
   # Setup empty matrices for output
@@ -153,16 +153,15 @@ carbon_correction <- function(InputFile, InputSheetName='Sheet1', ColumnsToSkip=
   OutputLabel <- NULL
   OutputPoolCompound <- NULL
 
-  for (i in unique(InputDF$compound)) {
-    CurrentMetabolite <- dplyr::filter(InputDF, .data$compound==i)
+  for (i in unique(input_data$cleaned$compound)) {
+    CurrentMetabolite <- dplyr::filter(input_data$cleaned, .data$compound==i)
     Formula=as.character(CurrentMetabolite$formula[1])
     if(length(Formula)==0 || is.na(Formula)) {
       print(paste("The formula of",i,"is unknown",sep=" "))
       break
     }
-    DataMatrix <- data.matrix(CurrentMetabolite %>%
-                                dplyr::select(-.data$compound, -.data$formula,
-                                              -.data$isotope_label, -.data$label_index)
+    DataMatrix <- data.matrix(dplyr::select(CurrentMetabolite, -.data$compound, -.data$formula,
+                                            -.data$isotope_label, -.data$label_index)
     )
     DataMatrix[is.na(DataMatrix)] <- 0
     Corrected <- IsotopeCorrection(Formula, DataMatrix, CurrentMetabolite$label_index,
@@ -187,8 +186,18 @@ carbon_correction <- function(InputFile, InputSheetName='Sheet1', ColumnsToSkip=
   names(OutputPoolBeforeDF) <- c("Compound", sample_col_names)
   names(OutputPoolAfterDF) <- c("Compound", sample_col_names)
 
-  return(list("Corrected" = OutputDF,
-              "Normalized" = OutputPercentageDF,
-              "PoolBeforeDF" = OutputPoolBeforeDF,
-              "PoolAfterDF" = OutputPoolAfterDF))
+  OutputDataFrames <- list("Original" = input_data$original,
+                           "Corrected" = OutputDF,
+                           "Normalized" = OutputPercentageDF,
+                           "PoolBeforeDF" = OutputPoolBeforeDF,
+                           "PoolAfterDF" = OutputPoolAfterDF)
+
+  if(!identical(FALSE, output_path)) {
+    if(is.null(output_path)) {
+      output_path = paste(tools::file_path_sans_ext(path), "_corrected.", tools::file_ext(path), sep="")
+    }
+    writexl::write_xlsx(OutputDataFrames, output_path)
+  }
+
+  return(OutputDataFrames)
 }

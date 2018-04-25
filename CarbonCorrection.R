@@ -4,7 +4,6 @@
 #Use install.packages("") to install packages###
 
 library(accucor)
-library(xlsx)
 
 ###Please make sure these parameters are accurate.#
 C13Purity <- 0.99
@@ -17,17 +16,12 @@ ReportPoolSize <- TRUE
 InputFile <- "test/JCGC_test_2.xlsx"
 InputSheetName <- "JCGC_test"
 
-OutputFile <- "test/JCGC_test_2_corrected.xlsx"
+OutputFile <- "JCGC_test_2_corrected.xlsx"
 
 InputFile <- "inst/extdata/C_Sample_Input_Simple.xlsx"
 InputSheetName <- "13C"
-OutputDataFrames <- carbon_correction(InputFile, InputSheetName,
-                                      Resolution=Resolution, ResDefAt=ResDefAt, ReportPoolSize = ReportPoolSize)
-
-
-# Write to output file using list of dataframes
-# https://github.com/ropensci/writexl/issues/3
-# Get original data as read in by readxl (need to modify io function), store as original sheet name
-write.xlsx2(OutputDataFrames$Corrected, file=OutputFile, sheetName = "Corrected", row.names=FALSE, append=TRUE)
-write.xlsx2(OutputDataFrames$Normalized, file=OutputFile, sheetName = "Normalized", row.names=FALSE, append=TRUE)
-write.xlsx2(OutputDataFrames$PoolAfterDF, file=OutputFile, sheetName = "Pool Size", row.names=FALSE, append=TRUE)
+OutputDataFrames <- carbon_correction(InputFile, InputSheetName, output_path = OutputFile,
+                                      Resolution = Resolution, ResDefAt = ResDefAt,
+                                      C13Purity = C13Purity, ReportPoolSize = ReportPoolSize)
+# Output is written to InputFile_corrected.xlsx
+# Set output_path to override location, set output_path to FALSE to avoid writing
