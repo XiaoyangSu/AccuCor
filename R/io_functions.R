@@ -38,21 +38,41 @@ read_elmaven_xlsx <- function(path, sheet = NULL, ColumnsToSkip = NULL, ...) {
   # Generate label column as incremental index
   isotope_label_col_num <- which(tolower(names(InputDF)) == 'isotopelabel')
   isotope_label_col_name <- names(InputDF)[isotope_label_col_num]
-  label_counts <- create_label_count(dplyr::pull(InputDF, isotope_label_col_num), "C12 PARENT", "C13-label-")
+  isotope_labels <- dplyr::pull(InputDF, isotope_label_col_num)
+  label_counts <- create_label_count(isotope_labels)
 
   cleaned_dataframe <- dplyr::bind_cols(
     dplyr::select(InputDF, compound = compound_col_num,
                   formula = formula_col_num,
                   isotope_label = isotope_label_col_num),
-    label_index = label_counts,
+    label_index = label_counts$label_counts,
     dplyr::select(InputDF, sample_col_names))
 
-  return(list(original = InputDF, cleaned = cleaned_dataframe))
+  return(list(original = InputDF, cleaned = cleaned_dataframe, isotope = label_counts$isotope))
 }
 
-create_label_count <- function(isotope_labels, parent_prefix, isotope_prefix) {
-  label_counts <- stringr::str_replace_all(isotope_labels, isotope_prefix, "")
-  label_counts <- stringr::str_replace_all(label_counts, parent_prefix, "0")
+
+
+create_label_count <- function(isotope_labels) {
+  isotope_info <- determine_isotope(isotope_labels)
+  label_counts <- stringr::str_replace_all(isotope_labels, isotope_info$isotope_prefix, "")
+  label_counts <- stringr::str_replace_all(label_counts, isotope_info$parent_prefix, "0")
   label_counts <- as.integer(label_counts)
-  return(label_counts)
+  return(list(label_counts = label_counts, isotope = isotope_info$isotope))
+}
+
+
+determine_isotope <- function(isotope_labels) {
+  if(any(grepl("^D", isotope_labels))) {
+    parent_prefix = "C12 PARENT"
+    isotope_prefix = "D-label-"
+    isotope = "D"
+  } else if(any(grepl("^C13", isotope_labels))) {
+    parent_prefix = "C12 PARENT"
+    isotope_prefix = "C13-label-"
+    isotope = "C"
+  } else {
+    stop("Unable to determine isotope from isotopeLabel column")
+  }
+  return(list(isotope = isotope, parent_prefix = parent_prefix, isotope_prefix = isotope_prefix))
 }
