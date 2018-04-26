@@ -80,6 +80,41 @@ read_elmaven <- function(path, sheet = NULL, columns_to_skip = NULL,
   return(list(original = InputDF, cleaned = cleaned_dataframe, isotope = label_counts$isotope))
 }
 
+
+create_label_count <- function(isotope_labels) {
+  isotope_info <- determine_isotope(isotope_labels)
+  label_counts <- stringr::str_replace_all(isotope_labels, isotope_info$isotope_prefix, "")
+  label_counts <- stringr::str_replace_all(label_counts, isotope_info$parent_prefix, "0")
+  label_counts <- as.integer(label_counts)
+  if (any(is.na(label_counts))) {
+    bad_labels <- is.na(label_counts)
+    stop(paste("Unable to parse isotope labels: ",
+               isotope_labels[bad_labels], sep = ""))
+  }
+  return(list(label_counts = label_counts, isotope = isotope_info$isotope))
+}
+
+
+determine_isotope <- function(isotope_labels) {
+  if(any(grepl("^D", isotope_labels))) {
+    parent_prefix = "C12 PARENT"
+    isotope_prefix = "D-label-"
+    isotope = "D"
+  } else if(any(grepl("^C13", isotope_labels))) {
+    parent_prefix = "C12 PARENT"
+    isotope_prefix = "C13-label-"
+    isotope = "C"
+  } else if(any(grepl("^N15", isotope_labels))) {
+    parent_prefix = "C12 PARENT"
+    isotope_prefix = "N15-label-"
+    isotope = "N"
+  } else {
+    stop("Unable to determine isotope from isotopeLabel column, must be one of (C, D, or N)")
+  }
+  return(list(isotope = isotope, parent_prefix = parent_prefix, isotope_prefix = isotope_prefix))
+}
+
+
 write_output <- function(dataframe_list, path, filetype = NULL, ...) {
   if(identical(FALSE, path)) {
     return(path)
@@ -114,35 +149,4 @@ write_output <- function(dataframe_list, path, filetype = NULL, ...) {
     stop(paste("Unsupported output filetype: '", filetype, "'", sep = ""))
   }
   return(path)
-}
-
-create_label_count <- function(isotope_labels) {
-  isotope_info <- determine_isotope(isotope_labels)
-  label_counts <- stringr::str_replace_all(isotope_labels, isotope_info$isotope_prefix, "")
-  label_counts <- stringr::str_replace_all(label_counts, isotope_info$parent_prefix, "0")
-  label_counts <- as.integer(label_counts)
-  if (any(is.na(label_counts))) {
-    stop("Unable to parse isotope labels from 'isotopelabel' column in")
-  }
-  return(list(label_counts = label_counts, isotope = isotope_info$isotope))
-}
-
-
-determine_isotope <- function(isotope_labels) {
-  if(any(grepl("^D", isotope_labels))) {
-    parent_prefix = "C12 PARENT"
-    isotope_prefix = "D-label-"
-    isotope = "D"
-  } else if(any(grepl("^C13", isotope_labels))) {
-    parent_prefix = "C12 PARENT"
-    isotope_prefix = "C13-label-"
-    isotope = "C"
-  } else if(any(grepl("^N15", isotope_labels))) {
-    parent_prefix = "C12 PARENT"
-    isotope_prefix = "N15-label-"
-    isotope = "N"
-  } else {
-    stop("Unable to determine isotope from isotopeLabel column, must be one of (C, D, or N)")
-  }
-  return(list(isotope = isotope, parent_prefix = parent_prefix, isotope_prefix = isotope_prefix))
 }

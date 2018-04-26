@@ -455,7 +455,7 @@ natural_abundance_correction <- function(path, sheet = NULL,
   OutputPercentageDF <- data.frame(OutputCompound, OutputLabel, OutputPercentageMatrix)
   OutputPoolBeforeDF <- data.frame(OutputPoolCompound, OutputPoolBefore)
   OutputPoolAfterDF <- data.frame(OutputPoolCompound, OutputPoolAfter)
-  names(OutputDF) <- c("Compound", "Label", sample_col_names)
+  names(OutputDF) <- c("Compound", paste(input_data$isotope, "Label", sep="_"), sample_col_names)
   names(OutputPercentageDF) <- names(OutputDF)
   names(OutputPoolBeforeDF) <- c("Compound", sample_col_names)
   names(OutputPoolAfterDF) <- c("Compound", sample_col_names)
