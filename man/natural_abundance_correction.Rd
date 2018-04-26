@@ -4,9 +4,9 @@
 \alias{natural_abundance_correction}
 \title{Natural Abundance correction for mass spectrometry data}
 \usage{
-natural_abundance_correction(path, sheet = NULL, output_path = NULL,
-  ColumnsToSkip = NULL, Resolution, ResDefAt, purity = 0.99,
-  ReportPoolSize = TRUE)
+natural_abundance_correction(path, sheet = NULL, output_base = NULL,
+  columns_to_skip = NULL, resolution, resolution_defined_at, purity = 0.99,
+  report_pool_size = TRUE)
 }
 \arguments{
 \item{path}{Path to xlsx file.}
@@ -14,20 +14,21 @@ natural_abundance_correction(path, sheet = NULL, output_path = NULL,
 \item{sheet}{Name of sheet in xlsx file with columns 'compound',
 'formula', 'isotopelabel', and one column per sample.}
 
-\item{output_path}{Path to output file, default is input path with
-`_corrected` appended. If `FALSE` then no output file is written.}
+\item{output_base}{Path to basename of output file, default is input path.
+`_corrected` will be appended to basename. Filetype is determined by
+file extension.  If `FALSE` then no output file is written.}
 
-\item{ColumnsToSkip}{Specify column heading to skip. All other columns not
+\item{columns_to_skip}{Specify column heading to skip. All other columns not
 named 'compound', 'formula', and 'isotopelabel' will be assumed to be
 sample names.}
 
-\item{Resolution}{For Exactive, the Resolution is 100000, defined at Mw 200}
+\item{resolution}{For Exactive, the Resolution is 100000, defined at Mw 200}
 
-\item{ResDefAt}{Resolution defined at (in Mw), e.g. 200 Mw}
+\item{resolution_defined_at}{Resolution defined at (in Mw), e.g. 200 Mw}
 
 \item{purity}{Isotope purity, default: 0.99}
 
-\item{ReportPoolSize}{default: TRUE}
+\item{report_pool_size}{default: TRUE}
 }
 \value{
 Named list of matrices: 'Corrected', 'Normalized',

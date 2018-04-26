@@ -352,15 +352,16 @@ nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution, 
 #' @param path Path to xlsx file.
 #' @param sheet Name of sheet in xlsx file with columns 'compound',
 #'      'formula', 'isotopelabel', and one column per sample.
-#' @param output_path Path to output file, default is input path with
-#'      `_corrected` appended. If `FALSE` then no output file is written.
-#' @param ColumnsToSkip Specify column heading to skip. All other columns not
+#' @param output_base Path to basename of output file, default is input path.
+#'       `_corrected` will be appended to basename. Filetype is determined by
+#'       file extension.  If `FALSE` then no output file is written.
+#' @param columns_to_skip Specify column heading to skip. All other columns not
 #'      named 'compound', 'formula', and 'isotopelabel' will be assumed to be
 #'      sample names.
-#' @param Resolution For Exactive, the Resolution is 100000, defined at Mw 200
-#' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
+#' @param resolution For Exactive, the Resolution is 100000, defined at Mw 200
+#' @param resolution_defined_at Resolution defined at (in Mw), e.g. 200 Mw
 #' @param purity Isotope purity, default: 0.99
-#' @param ReportPoolSize default: TRUE
+#' @param report_pool_size default: TRUE
 #' @importFrom rlang .data
 #' @return Named list of matrices: 'Corrected', 'Normalized',
 #'      'PoolBeforeDF', and 'PoolAfterDF'.
@@ -370,30 +371,37 @@ nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution, 
 #' natural_abundance_correction("inst/extdata/C_Sample_Input_Simple.xlsx",
 #'                              Resolution=100000, ResDefAt=200)
 #' }
-natural_abundance_correction <- function(path, sheet = NULL, output_path = NULL, ColumnsToSkip = NULL,
-                                         Resolution, ResDefAt, purity = 0.99, ReportPoolSize = TRUE) {
+natural_abundance_correction <- function(path, sheet = NULL,
+                                         output_base = NULL,
+                                         columns_to_skip = NULL,
+                                         resolution,
+                                         resolution_defined_at,
+                                         purity = 0.99,
+                                         report_pool_size = TRUE) {
 
-  if (missing(Resolution)) {
+  if (missing(resolution)) {
     stop("Must specify 'Resolution'")
   }
-  if (!is.numeric(Resolution)) {
+  if (!is.numeric(resolution)) {
     stop("'Resolution' must be an integer")
   }
-  if (as.numeric(Resolution)%%1!=0) {
+  if (as.numeric(resolution)%%1!=0) {
     stop("'Resolution' must be an integer")
   }
 
-  if (missing(ResDefAt)) {
+  if (missing(resolution_defined_at)) {
     stop("Must specify the Mw the 'Resolution' is defined at ('ResDefAt' parameter)")
   }
-  if (!is.numeric(ResDefAt)) {
+  if (!is.numeric(resolution_defined_at)) {
     stop("'ResDefAt' must be an integer")
   }
-  if (ResDefAt%%1!=0) {
+  if (resolution_defined_at%%1!=0) {
     stop("'ResDefAt' must be an integer")
   }
 
-  input_data <- read_elmaven_xlsx(path = path, sheet = sheet, ColumnsToSkip = ColumnsToSkip)
+
+  input_data <- read_elmaven(path = path, sheet = sheet,
+                             columns_to_skip = columns_to_skip)
   sample_col_names <- names(input_data$cleaned)[which(!(tolower(names(input_data$cleaned)) %in%
                                                         tolower(c("compound", "formula", "isotope_label", "label_index"))))]
 
@@ -420,16 +428,16 @@ natural_abundance_correction <- function(path, sheet = NULL, output_path = NULL,
     DataMatrix[is.na(DataMatrix)] <- 0
     if (input_data$isotope == "C") {
       Corrected <- carbon_isotope_correction(Formula, DataMatrix, CurrentMetabolite$label_index,
-                                             Resolution = Resolution, ResDefAt = ResDefAt,
-                                             purity = purity, ReportPoolSize = ReportPoolSize)
+                                             Resolution = resolution, ResDefAt = resolution_defined_at,
+                                             purity = purity, ReportPoolSize = report_pool_size)
     } else if (input_data$isotope == "D") {
       Corrected <- deuterium_isotope_correction(Formula, DataMatrix, CurrentMetabolite$label_index,
-                                             Resolution = Resolution, ResDefAt = ResDefAt,
-                                             purity = purity, ReportPoolSize = ReportPoolSize)
+                                             Resolution = resolution, ResDefAt = resolution_defined_at,
+                                             purity = purity, ReportPoolSize = report_pool_size)
     } else if (input_data$isotope == "N") {
       Corrected <- nitrogen_isotope_correction(Formula, DataMatrix, CurrentMetabolite$label_index,
-                                                Resolution = Resolution, ResDefAt = ResDefAt,
-                                                purity = purity, ReportPoolSize = ReportPoolSize)
+                                                Resolution = resolution, ResDefAt = resolution_defined_at,
+                                                purity = purity, ReportPoolSize = report_pool_size)
     } else {
       stop(paste("Unsupported isotope '", input_data$isotope, "' detected", sep = ""))
     }
@@ -458,11 +466,11 @@ natural_abundance_correction <- function(path, sheet = NULL, output_path = NULL,
                            "PoolBeforeDF" = OutputPoolBeforeDF,
                            "PoolAfterDF" = OutputPoolAfterDF)
 
-  if(!identical(FALSE, output_path)) {
-    if(is.null(output_path)) {
-      output_path = paste(tools::file_path_sans_ext(path), "_corrected.", tools::file_ext(path), sep="")
+  if(!identical(FALSE, output_base)) {
+    if(is.null(output_base)) {
+      output_base = path
     }
-    writexl::write_xlsx(OutputDataFrames, output_path)
+    write_output(OutputDataFrames, output_base)
   }
 
   return(OutputDataFrames)
