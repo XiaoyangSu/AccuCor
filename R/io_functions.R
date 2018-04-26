@@ -30,13 +30,25 @@ read_elmaven_xlsx <- function(path, sheet = NULL, ColumnsToSkip = NULL, ...) {
   }
   keep_col_nums <- which(!(tolower(names(InputDF)) %in% tolower(ColumnsToSkip)))
   formula_col_num <- which(tolower(names(InputDF)) == 'formula')
+  if (rlang::is_empty(formula_col_num)) {
+    stop(paste("Unable to find column 'formula' in file: ", path, sep = ""))
+  }
   formula_col_name <- names(InputDF)[formula_col_num]
   compound_col_num <- which(tolower(names(InputDF)) == 'compound')
+  if (rlang::is_empty(compound_col_num)) {
+    stop(paste("Unable to find column 'compound' in file: ", path, sep = ""))
+  }
   compound_col_name <- names(InputDF)[compound_col_num]
   sample_col_names <- names(InputDF)[which(!(tolower(names(InputDF)) %in% tolower(c(ColumnsToSkip, "compound", "formula"))))]
+  if (length(sample_col_names == 0)) {
+    stop(paste("Unable to find sample columns in file: ", path, sep = ""))
+  }
 
   # Generate label column as incremental index
   isotope_label_col_num <- which(tolower(names(InputDF)) == 'isotopelabel')
+  if (rlang::is_empty(isotope_label_col_num)) {
+    stop(paste("Unable to find column 'isotopelabel' in file: ", path, sep = ""))
+  }
   isotope_label_col_name <- names(InputDF)[isotope_label_col_num]
   isotope_labels <- dplyr::pull(InputDF, isotope_label_col_num)
   label_counts <- create_label_count(isotope_labels)
@@ -52,12 +64,14 @@ read_elmaven_xlsx <- function(path, sheet = NULL, ColumnsToSkip = NULL, ...) {
 }
 
 
-
 create_label_count <- function(isotope_labels) {
   isotope_info <- determine_isotope(isotope_labels)
   label_counts <- stringr::str_replace_all(isotope_labels, isotope_info$isotope_prefix, "")
   label_counts <- stringr::str_replace_all(label_counts, isotope_info$parent_prefix, "0")
   label_counts <- as.integer(label_counts)
+  if (any(is.na(label_counts))) {
+    stop("Unable to parse isotope labels from 'isotopelabel' column in")
+  }
   return(list(label_counts = label_counts, isotope = isotope_info$isotope))
 }
 
