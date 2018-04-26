@@ -1,13 +1,14 @@
 Package: accucor
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Natural Abundance Correction of Mass Spectrometer Data
 Version: 0.1.0
 Authors@R: as.person(c(
     "Xiaoyang Su <xs137@rwjms.rutgers.edu> [aut, cre]", 
     "Lance Parsons <lparsons@princeton.edu> [aut]"
   ))
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: AccuCor is an isotope natural abundance correction algorithm that
+  is needed especially for high resolution mass spectrometers. AccuCor supports
+  correction for 13C, 2H and 15N.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

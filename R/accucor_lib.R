@@ -5,13 +5,13 @@
 #' @param label vector of integer labels
 #' @param Resolution For Exactive, the Resolution is 100000, defined at Mw 200
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
-#' @param C13Purity Carbon 13 purity, default: 0.99
+#' @param purity Carbon 13 purity, default: 0.99
 #' @param ReportPoolSize default: TRUE
 #' @importFrom rlang .data
 #' @return Named list of matrices: 'Corrected', 'Normalized',
 #'      'PoolBeforeDF', and 'PoolAfterDF'.
-carbon_isotope_correction <- function(formula, datamatrix, label, Resolution, ResDefAt,
-                              C13Purity=0.99, ReportPoolSize=TRUE) {
+carbon_isotope_correction <- function(formula, datamatrix, label, Resolution,
+                                      ResDefAt, purity=0.99, ReportPoolSize=TRUE) {
 
   CarbonNaturalAbundace <- c(0.9893, 0.0107)
   HydrogenNaturalAbundace <- c(0.999885, 0.000115)
@@ -56,7 +56,7 @@ carbon_isotope_correction <- function(formula, datamatrix, label, Resolution, Re
 
 
   for(i in 1:(AtomNumber["C"]+1)){
-    PurityMatrix[i,] <- sapply(0:(AtomNumber["C"]), function(x) stats::dbinom(x-i+1, x , (1-C13Purity)))
+    PurityMatrix[i,] <- sapply(0:(AtomNumber["C"]), function(x) stats::dbinom(x-i+1, x , (1-purity)))
   }
 
   for(i in 1:(AtomNumber["C"]+1)){
@@ -336,7 +336,18 @@ nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution, 
 }
 
 
-#' Natural Abundance correction for specified isotope
+#' Natural Abundance correction for mass spectrometry data
+#'
+#' \code{natural_abundance_correction} returns the corrected and normalized
+#' intensities of isotopically labeled mass spectrometry data. It was designed
+#' to work with input data from
+#' \href{https://elucidatainc.github.io/ElMaven/}{El-MAVEN} and
+#' \href{http://maven.princeton.edu}{MAVEN} software.
+#'
+#' C13, H2, and N15 isotopes are supported. The isotopes are detected from the
+#' \code{isotopeLabel} column of the input file. The expected label text is
+#' \code{C13-label-#}. \code{D-label-#}. or \code{N15-label-#}. Parent
+#' (unlabeled) compounds are specified by \code{C12 PARENT}.
 #'
 #' @param path Path to xlsx file.
 #' @param sheet Name of sheet in xlsx file with columns 'compound',
@@ -356,7 +367,8 @@ nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution, 
 #' @export
 #' @examples
 #' \dontrun{
-#' natural_abundance_correction("ExcelFile", Resolution=100000, ResDefAt=200)
+#' natural_abundance_correction("inst/extdata/C_Sample_Input_Simple.xlsx",
+#'                              Resolution=100000, ResDefAt=200)
 #' }
 natural_abundance_correction <- function(path, sheet = NULL, output_path = NULL, ColumnsToSkip = NULL,
                                          Resolution, ResDefAt, purity = 0.99, ReportPoolSize = TRUE) {
@@ -409,7 +421,7 @@ natural_abundance_correction <- function(path, sheet = NULL, output_path = NULL,
     if (input_data$isotope == "C") {
       Corrected <- carbon_isotope_correction(Formula, DataMatrix, CurrentMetabolite$label_index,
                                              Resolution = Resolution, ResDefAt = ResDefAt,
-                                             C13Purity = purity, ReportPoolSize = ReportPoolSize)
+                                             purity = purity, ReportPoolSize = ReportPoolSize)
     } else if (input_data$isotope == "D") {
       Corrected <- deuterium_isotope_correction(Formula, DataMatrix, CurrentMetabolite$label_index,
                                              Resolution = Resolution, ResDefAt = ResDefAt,

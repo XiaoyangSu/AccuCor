@@ -2,7 +2,7 @@
 % Please edit documentation in R/accucor_lib.R
 \name{natural_abundance_correction}
 \alias{natural_abundance_correction}
-\title{Natural Abundance correction for specified isotope}
+\title{Natural Abundance correction for mass spectrometry data}
 \usage{
 natural_abundance_correction(path, sheet = NULL, output_path = NULL,
   ColumnsToSkip = NULL, Resolution, ResDefAt, purity = 0.99,
@@ -34,10 +34,21 @@ Named list of matrices: 'Corrected', 'Normalized',
      'PoolBeforeDF', and 'PoolAfterDF'.
 }
 \description{
-Natural Abundance correction for specified isotope
+\code{natural_abundance_correction} returns the corrected and normalized
+intensities of isotopically labeled mass spectrometry data. It was designed
+to work with input data from
+\href{https://elucidatainc.github.io/ElMaven/}{El-MAVEN} and
+\href{http://maven.princeton.edu}{MAVEN} software.
+}
+\details{
+C13, H2, and N15 isotopes are supported. The isotopes are detected from the
+\code{isotopeLabel} column of the input file. The expected label text is
+\code{C13-label-#}. \code{D-label-#}. or \code{N15-label-#}. Parent
+(unlabeled) compounds are specified by \code{C12 PARENT}.
 }
 \examples{
 \dontrun{
-natural_abundance_correction("ExcelFile", Resolution=100000, ResDefAt=200)
+natural_abundance_correction("inst/extdata/C_Sample_Input_Simple.xlsx",
+                             Resolution=100000, ResDefAt=200)
 }
 }
