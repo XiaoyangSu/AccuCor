@@ -461,10 +461,10 @@ natural_abundance_correction <- function(path, sheet = NULL,
   names(OutputPoolAfterDF) <- c("Compound", sample_col_names)
 
   OutputDataFrames <- list("Original" = input_data$original,
-                           "Corrected" = OutputDF,
-                           "Normalized" = OutputPercentageDF,
-                           "PoolBeforeDF" = OutputPoolBeforeDF,
-                           "PoolAfterDF" = OutputPoolAfterDF)
+                           "Corrected" = dplyr::as.tbl(OutputDF),
+                           "Normalized" = dplyr::as.tbl(OutputPercentageDF),
+                           "PoolBeforeDF" = dplyr::as.tbl(OutputPoolBeforeDF),
+                           "PoolAfterDF" = dplyr::as.tbl(OutputPoolAfterDF))
 
   if(!identical(FALSE, output_base)) {
     if(is.null(output_base)) {
