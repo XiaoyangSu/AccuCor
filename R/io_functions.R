@@ -68,6 +68,17 @@ read_elmaven <- function(path, sheet = NULL, columns_to_skip = NULL,
   }
   isotope_label_col_name <- names(InputDF)[isotope_label_col_num]
   isotope_labels <- dplyr::pull(InputDF, isotope_label_col_num)
+
+  # Multiple peak groups for a given compound is not supported
+  tmp <- dplyr::group_by(InputDF, rlang::UQ(as.name(compound_col_name)))
+  tmp <- dplyr::summarise(tmp, peak_group_count =
+                     sum(grepl("PARENT", rlang::UQ(as.name(isotope_label_col_name)))))
+  tmp <- dplyr::filter(tmp, .data$peak_group_count > 1)
+  tmp <- dplyr::pull(tmp, rlang::UQ(as.name(compound_col_name)))
+  if (! rlang::is_empty(tmp)) {
+    stop(paste("Multiple peak groups detected for: ", tmp, sep = ""))
+  }
+
   label_counts <- create_label_count(isotope_labels)
 
   cleaned_dataframe <- dplyr::bind_cols(
