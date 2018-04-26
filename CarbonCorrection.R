@@ -32,3 +32,8 @@ OutputDataFrames <- carbon_correction(InputFile, sheet = InputSheetName, output_
 deuterium_input_file = "inst/extdata/D_Sample_Input_Simple.xlsx"
 deuterium_corrected <- natural_abundance_correction(path = deuterium_input_file,
                                                     Resolution = Resolution, ResDefAt = ResDefAt)
+
+# Test Nitrogen
+nitrogen_input_file = "inst/extdata/N_Sample_Input_Simple.xlsx"
+nitrogen_corrected <- natural_abundance_correction(path = nitrogen_input_file,
+                                                    Resolution = Resolution, ResDefAt = ResDefAt)

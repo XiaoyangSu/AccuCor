@@ -24,8 +24,7 @@ read_elmaven_xlsx <- function(path, sheet = NULL, ColumnsToSkip = NULL, ...) {
   if(is.null(ColumnsToSkip)) {
     ColumnsToSkip = c(
       "label", "metaGroupId", "groupId", "goodPeakCount", "medMz", "medRt",
-      "maxQuality", "isotopeLabel", "compoundId", "expectedRtDiff", "ppmDiff",
-      "parent"
+      "maxQuality", "compoundId", "expectedRtDiff", "ppmDiff", "parent"
     )
   }
   keep_col_nums <- which(!(tolower(names(InputDF)) %in% tolower(ColumnsToSkip)))
@@ -39,8 +38,12 @@ read_elmaven_xlsx <- function(path, sheet = NULL, ColumnsToSkip = NULL, ...) {
     stop(paste("Unable to find column 'compound' in file: ", path, sep = ""))
   }
   compound_col_name <- names(InputDF)[compound_col_num]
-  sample_col_names <- names(InputDF)[which(!(tolower(names(InputDF)) %in% tolower(c(ColumnsToSkip, "compound", "formula"))))]
-  if (length(sample_col_names == 0)) {
+  sample_col_names <- names(InputDF)[which(!(tolower(names(InputDF)) %in%
+                                               tolower(c(ColumnsToSkip,
+                                                         "compound",
+                                                         "formula",
+                                                         "isotopelabel"))))]
+  if (length(sample_col_names) == 0) {
     stop(paste("Unable to find sample columns in file: ", path, sep = ""))
   }
 
@@ -85,8 +88,12 @@ determine_isotope <- function(isotope_labels) {
     parent_prefix = "C12 PARENT"
     isotope_prefix = "C13-label-"
     isotope = "C"
+  } else if(any(grepl("^N15", isotope_labels))) {
+    parent_prefix = "C12 PARENT"
+    isotope_prefix = "N15-label-"
+    isotope = "N"
   } else {
-    stop("Unable to determine isotope from isotopeLabel column")
+    stop("Unable to determine isotope from isotopeLabel column, must be one of (C, D, or N)")
   }
   return(list(isotope = isotope, parent_prefix = parent_prefix, isotope_prefix = isotope_prefix))
 }

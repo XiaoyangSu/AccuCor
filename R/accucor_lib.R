@@ -223,6 +223,119 @@ deuterium_isotope_correction <- function(formula, datamatrix, label, Resolution,
 }
 
 
+#' Natural Abundance deuterium isotope correction for one metabolite
+#'
+#' @param formula String representing molecular formula
+#' @param datamatrix Matrix of abundnaces for each sample for each isotope
+#' @param label vector of integer labels
+#' @param Resolution For Exactive, the Resolution is 100000, defined at Mw 200
+#' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
+#' @param purity Nitrogen purity, default: 0.99
+#' @param ReportPoolSize default: TRUE
+#' @importFrom rlang .data
+#' @return Named list of matrices: 'Corrected', 'Normalized',
+#'      'PoolBeforeDF', and 'PoolAfterDF'.
+nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution, ResDefAt,
+                                        purity=0.99, ReportPoolSize=TRUE) {
+
+  CarbonNaturalAbundace <- c(0.9893, 0.0107)
+  HydrogenNaturalAbundace <- c(0.999885, 0.000115)
+  NitrogenNaturalAbundace <- c(0.99636, 0.00364)
+  OxygenNaturalAbundace <- c(0.99757, 0.00038, 0.00205)
+  SulfurNaturalAbundace <- c(0.9493, 0.00762, 0.0429)
+
+  AtomNumber <- rep(0,6)
+  names(AtomNumber) <- c("C","H","N","O","P","S")
+  MassDifference <- abs(c((13.00335-12),(2.0141-1.00783),(16.99913-15.99491),
+                          (17.99916-15.99491),(32.97146-31.97207),(33.96787-31.97207))-
+                          ((15.00011-14.00307)*c(1,1,1,2,1,2)))
+  names(MassDifference) <- c("C13","H2","O17","O18","S33","S34")
+  CorrectionLimit <- rep(0,6)
+  names(CorrectionLimit) <- c("C13","H2","O17","O18","S33","S34")
+
+  if.not.null <- function(x) if(!is.null(x)) x else 0
+  AtomNumber["C"] <- if.not.null(unlist(gsubfn::strapply(formula, "(C)(\\d*)", ~ as.numeric(if (nchar(..2)) ..2 else 1))))
+  AtomNumber["H"] <- if.not.null(unlist(gsubfn::strapply(formula, "(H)(\\d*)", ~ as.numeric(if (nchar(..2)) ..2 else 1))))
+  AtomNumber["N"] <- if.not.null(unlist(gsubfn::strapply(formula, "(N)(\\d*)", ~ as.numeric(if (nchar(..2)) ..2 else 1))))
+  AtomNumber["O"] <- if.not.null(unlist(gsubfn::strapply(formula, "(O)(\\d*)", ~ as.numeric(if (nchar(..2)) ..2 else 1))))
+  AtomNumber["P"] <- if.not.null(unlist(gsubfn::strapply(formula, "(P)(\\d*)", ~ as.numeric(if (nchar(..2)) ..2 else 1))))
+  AtomNumber["S"] <- if.not.null(unlist(gsubfn::strapply(formula, "(S)(\\d*)", ~ as.numeric(if (nchar(..2)) ..2 else 1))))
+
+  MolecularWeight <- sum(AtomNumber*c(12,1,14,16,31,32))
+
+  CorrectionLimit <- floor(MolecularWeight^(3/2)*1.66/(Resolution*sqrt(ResDefAt))/MassDifference)
+
+  ExpMatrix <- matrix(0, ncol=ncol(datamatrix), nrow=AtomNumber["N"]+1)
+  CorrectedMatrix <- matrix(0, ncol=ncol(datamatrix), nrow=AtomNumber["N"]+1)
+  for (i in 1:length(label)) {
+    ExpMatrix[label[i]+1,] <- datamatrix[i,]
+  }
+
+
+  PurityMatrix <- diag(AtomNumber["N"]+1)
+  CarbonMatrix <- diag(AtomNumber["N"]+1)
+  NitrogenMatrix <- diag(AtomNumber["N"]+1)
+  HydrogenMatrix <- diag(AtomNumber["N"]+1)
+  OxygenMatrix <- matrix(0,ncol=(AtomNumber["N"]+1),nrow=(AtomNumber["N"]+1))
+  SulfurMatrix <- matrix(0,ncol=(AtomNumber["N"]+1),nrow=(AtomNumber["N"]+1))
+
+
+  for(i in 1:(AtomNumber["N"]+1)){
+    PurityMatrix[i,] <- sapply(0:(AtomNumber["N"]), function(x) stats::dbinom(x-i+1, x , (1-purity)))
+  }
+
+  for(i in 1:(AtomNumber["N"]+1)){
+    NitrogenMatrix[,i] <- sapply(0:AtomNumber["N"], function(x) stats::dbinom(x-i+1, AtomNumber["N"]-i+1 , NitrogenNaturalAbundace[2]))
+  }
+
+  for(j in 0:min(AtomNumber["C"], CorrectionLimit["C13"], AtomNumber["N"]))
+    for(i in 1:(AtomNumber["N"]-j+1)){
+      CarbonMatrix[(i+j),i] <- stats::dbinom(j, AtomNumber["C"], CarbonNaturalAbundace[2])
+    }
+
+  for(j in 0:min(AtomNumber["H"], CorrectionLimit["H2"], AtomNumber["N"]))
+    for(i in 1:(AtomNumber["N"]-j+1)){
+      HydrogenMatrix[(i+j),i] <- stats::dbinom(j, AtomNumber["H"], HydrogenNaturalAbundace[2])
+    }
+
+  for(i in 0:min(AtomNumber["O"],CorrectionLimit["O17"])) {
+    for(j in 0:min(AtomNumber["O"],CorrectionLimit["O18"])){
+      k<-(i+j*2)
+      if ((i+j)>AtomNumber["O"]|k>AtomNumber["N"]) {
+        break
+      }
+      else {
+        for (m in 1:(AtomNumber["N"]-k+1)) {
+          OxygenMatrix[(m+k),m] <- OxygenMatrix[(m+k),m] + stats::dmultinom(c((AtomNumber["O"]-i-j),i,j), AtomNumber["O"], OxygenNaturalAbundace)
+        }
+      }
+    }
+  }
+
+  for(i in 0:min(AtomNumber["S"],CorrectionLimit["S33"])) {
+    for(j in 0:min(AtomNumber["S"],CorrectionLimit["S34"])){
+      k<-(i+j*2)
+      if ((i+j)>AtomNumber["S"]|k>AtomNumber["N"]) {
+        break
+      }
+      else {
+        for (m in 1:(AtomNumber["N"]-k+1)) {
+          SulfurMatrix[(m+k),m] <- SulfurMatrix[(m+k),m] + stats::dmultinom(c((AtomNumber["S"]-i-j),i,j), AtomNumber["S"], SulfurNaturalAbundace)
+        }
+      }
+    }
+  }
+
+  for(i in 1:ncol(datamatrix)) {
+    CorrectedMatrix[,i] <- stats::coef(nnls::nnls(SulfurMatrix %*% OxygenMatrix %*% CarbonMatrix %*%
+                                       HydrogenMatrix %*% NitrogenMatrix %*% PurityMatrix, ExpMatrix[,i]))
+  }
+
+  return(CorrectedMatrix)
+
+}
+
+
 #' Natural Abundance correction for specified isotope
 #'
 #' @param path Path to xlsx file.
@@ -301,8 +414,12 @@ natural_abundance_correction <- function(path, sheet = NULL, output_path = NULL,
       Corrected <- deuterium_isotope_correction(Formula, DataMatrix, CurrentMetabolite$label_index,
                                              Resolution = Resolution, ResDefAt = ResDefAt,
                                              purity = purity, ReportPoolSize = ReportPoolSize)
+    } else if (input_data$isotope == "N") {
+      Corrected <- nitrogen_isotope_correction(Formula, DataMatrix, CurrentMetabolite$label_index,
+                                                Resolution = Resolution, ResDefAt = ResDefAt,
+                                                purity = purity, ReportPoolSize = ReportPoolSize)
     } else {
-      stop(paste("Unknown isotope '", input_data$isotope, "' detected"))
+      stop(paste("Unsupported isotope '", input_data$isotope, "' detected", sep = ""))
     }
     CorrectedPercentage <- scale(Corrected,scale=colSums(Corrected),center=FALSE)
     OutputMatrix <- rbind(OutputMatrix, Corrected)
