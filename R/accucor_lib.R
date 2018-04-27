@@ -351,20 +351,21 @@ nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution, 
 #'
 #' @param path Path to xlsx file.
 #' @param sheet Name of sheet in xlsx file with columns 'compound',
-#'      'formula', 'isotopelabel', and one column per sample.
+#'   'formula', 'isotopelabel', and one column per sample.
 #' @param output_base Path to basename of output file, default is input path.
-#'       `_corrected` will be appended to basename. Filetype is determined by
-#'       file extension.  If `FALSE` then no output file is written.
+#'   `_corrected` will be appended to basename. Filetype is determined by
+#'   file extension.  If `FALSE` then no output file is written.
 #' @param columns_to_skip Specify column heading to skip. All other columns not
-#'      named 'compound', 'formula', and 'isotopelabel' will be assumed to be
-#'      sample names.
+#'   named 'compound', 'formula', and 'isotopelabel' will be assumed to be
+#'   sample names.
 #' @param resolution For Exactive, the Resolution is 100000, defined at Mw 200
 #' @param resolution_defined_at Resolution defined at (in Mw), e.g. 200 Mw
-#' @param purity Isotope purity, default: 0.99
+#' @param purity Isotope purity, default: Carbon 0.99; Deuterium 0.98;
+#'   Nitrogen 0.99
 #' @param report_pool_size default: TRUE
 #' @importFrom rlang .data
 #' @return Named list of matrices: 'Corrected', 'Normalized',
-#'      'PoolBeforeDF', and 'PoolAfterDF'.
+#'   'PoolBeforeDF', and 'PoolAfterDF'.
 #' @export
 #' @examples
 #' \dontrun{
@@ -376,27 +377,36 @@ natural_abundance_correction <- function(path, sheet = NULL,
                                          columns_to_skip = NULL,
                                          resolution,
                                          resolution_defined_at,
-                                         purity = 0.99,
+                                         purity = NULL,
                                          report_pool_size = TRUE) {
 
+  default_purity <- list("C" = 0.99, "D" = 0.98, "N" = 0.99)
+
   if (missing(resolution)) {
-    stop("Must specify 'Resolution'")
+    stop("Must specify 'resolution'")
   }
   if (!is.numeric(resolution)) {
-    stop("'Resolution' must be an integer")
+    stop("'resolution' must be an integer")
   }
   if (as.numeric(resolution)%%1!=0) {
-    stop("'Resolution' must be an integer")
+    stop("'resolution' must be an integer")
   }
 
   if (missing(resolution_defined_at)) {
-    stop("Must specify the Mw the 'Resolution' is defined at ('ResDefAt' parameter)")
+    stop("Must specify the Mw the 'Resolution' is defined at ('resolution_defined_at' parameter)")
   }
   if (!is.numeric(resolution_defined_at)) {
-    stop("'ResDefAt' must be an integer")
+    stop("'resolution_defined_at' must be an integer")
   }
   if (resolution_defined_at%%1!=0) {
-    stop("'ResDefAt' must be an integer")
+    stop("'resolution_defined_at' must be an integer")
+  }
+  if (!is.null(purity)) {
+    if (!is.numeric(resolution_defined_at)) {
+      stop("'purity' must be a number")
+    } else if ((purity < 0) | (purity > 1)) {
+      stop("'purity' must be between 0 and 1")
+    }
   }
 
 
@@ -404,6 +414,13 @@ natural_abundance_correction <- function(path, sheet = NULL,
                              columns_to_skip = columns_to_skip)
   sample_col_names <- names(input_data$cleaned)[which(!(tolower(names(input_data$cleaned)) %in%
                                                         tolower(c("compound", "formula", "isotope_label", "label_index"))))]
+
+  if ( !(input_data$isotope %in% names(default_purity)) ) {
+    stop(paste("Unsupported isotope '", input_data$isotope, "' detected", sep = ""))
+  }
+  if (is.null(purity)) {
+    purity = default_purity[[input_data$isotope]]
+  }
 
   # Setup empty matrices for output
   # TODO Refactor this to preallocate or better yet, use sapply
@@ -451,20 +468,27 @@ natural_abundance_correction <- function(path, sheet = NULL,
     OutputPoolCompound <- append(OutputPoolCompound, i)
   }
 
-  OutputDF <- data.frame(OutputCompound, OutputLabel, OutputMatrix)
-  OutputPercentageDF <- data.frame(OutputCompound, OutputLabel, OutputPercentageMatrix)
-  OutputPoolBeforeDF <- data.frame(OutputPoolCompound, OutputPoolBefore)
-  OutputPoolAfterDF <- data.frame(OutputPoolCompound, OutputPoolAfter)
-  names(OutputDF) <- c("Compound", paste(input_data$isotope, "Label", sep="_"), sample_col_names)
+  compound_label_tbl <- dplyr::tibble(OutputCompound, OutputLabel)
+  OutputDF <- dplyr::bind_cols(compound_label_tbl,
+                               dplyr::as_tibble(OutputMatrix))
+  OutputPercentageDF <- dplyr::bind_cols(compound_label_tbl,
+                                         dplyr::as_tibble(OutputPercentageMatrix))
+  OutputPoolBeforeDF <- dplyr::bind_cols(dplyr::tibble(OutputPoolCompound),
+                                         dplyr::as_tibble(OutputPoolBefore))
+  OutputPoolAfterDF <- dplyr::bind_cols(dplyr::tibble(OutputPoolCompound),
+                                        dplyr::as_tibble(OutputPoolAfter))
+  names(OutputDF) <- c("Compound",
+                       paste(input_data$isotope,"Label", sep="_"),
+                       sample_col_names)
   names(OutputPercentageDF) <- names(OutputDF)
   names(OutputPoolBeforeDF) <- c("Compound", sample_col_names)
   names(OutputPoolAfterDF) <- c("Compound", sample_col_names)
 
   OutputDataFrames <- list("Original" = input_data$original,
-                           "Corrected" = dplyr::as.tbl(OutputDF),
-                           "Normalized" = dplyr::as.tbl(OutputPercentageDF),
-                           "PoolBeforeDF" = dplyr::as.tbl(OutputPoolBeforeDF),
-                           "PoolAfterDF" = dplyr::as.tbl(OutputPoolAfterDF))
+                           "Corrected" = OutputDF,
+                           "Normalized" = OutputPercentageDF,
+                           "PoolBeforeDF" = OutputPoolBeforeDF,
+                           "PoolAfterDF" = OutputPoolAfterDF)
 
   if(!identical(FALSE, output_base)) {
     if(is.null(output_base)) {

@@ -5,7 +5,7 @@
 \title{Natural Abundance correction for mass spectrometry data}
 \usage{
 natural_abundance_correction(path, sheet = NULL, output_base = NULL,
-  columns_to_skip = NULL, resolution, resolution_defined_at, purity = 0.99,
+  columns_to_skip = NULL, resolution, resolution_defined_at, purity = NULL,
   report_pool_size = TRUE)
 }
 \arguments{
@@ -26,13 +26,14 @@ sample names.}
 
 \item{resolution_defined_at}{Resolution defined at (in Mw), e.g. 200 Mw}
 
-\item{purity}{Isotope purity, default: 0.99}
+\item{purity}{Isotope purity, default: Carbon 0.99; Deuterium 0.98;
+Nitrogen 0.99}
 
 \item{report_pool_size}{default: TRUE}
 }
 \value{
 Named list of matrices: 'Corrected', 'Normalized',
-     'PoolBeforeDF', and 'PoolAfterDF'.
+  'PoolBeforeDF', and 'PoolAfterDF'.
 }
 \description{
 \code{natural_abundance_correction} returns the corrected and normalized
