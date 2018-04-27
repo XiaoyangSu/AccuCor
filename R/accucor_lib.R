@@ -451,20 +451,27 @@ natural_abundance_correction <- function(path, sheet = NULL,
     OutputPoolCompound <- append(OutputPoolCompound, i)
   }
 
-  OutputDF <- data.frame(OutputCompound, OutputLabel, OutputMatrix)
-  OutputPercentageDF <- data.frame(OutputCompound, OutputLabel, OutputPercentageMatrix)
-  OutputPoolBeforeDF <- data.frame(OutputPoolCompound, OutputPoolBefore)
-  OutputPoolAfterDF <- data.frame(OutputPoolCompound, OutputPoolAfter)
-  names(OutputDF) <- c("Compound", paste(input_data$isotope, "Label", sep="_"), sample_col_names)
+  compound_label_tbl <- dplyr::tibble(OutputCompound, OutputLabel)
+  OutputDF <- dplyr::bind_cols(compound_label_tbl,
+                               dplyr::as_tibble(OutputMatrix))
+  OutputPercentageDF <- dplyr::bind_cols(compound_label_tbl,
+                                         dplyr::as_tibble(OutputPercentageMatrix))
+  OutputPoolBeforeDF <- dplyr::bind_cols(dplyr::tibble(OutputPoolCompound),
+                                         dplyr::as_tibble(OutputPoolBefore))
+  OutputPoolAfterDF <- dplyr::bind_cols(dplyr::tibble(OutputPoolCompound),
+                                        dplyr::as_tibble(OutputPoolAfter))
+  names(OutputDF) <- c("Compound",
+                       paste(input_data$isotope,"Label", sep="_"),
+                       sample_col_names)
   names(OutputPercentageDF) <- names(OutputDF)
   names(OutputPoolBeforeDF) <- c("Compound", sample_col_names)
   names(OutputPoolAfterDF) <- c("Compound", sample_col_names)
 
   OutputDataFrames <- list("Original" = input_data$original,
-                           "Corrected" = dplyr::as.tbl(OutputDF),
-                           "Normalized" = dplyr::as.tbl(OutputPercentageDF),
-                           "PoolBeforeDF" = dplyr::as.tbl(OutputPoolBeforeDF),
-                           "PoolAfterDF" = dplyr::as.tbl(OutputPoolAfterDF))
+                           "Corrected" = OutputDF,
+                           "Normalized" = OutputPercentageDF,
+                           "PoolBeforeDF" = OutputPoolBeforeDF,
+                           "PoolAfterDF" = OutputPoolAfterDF)
 
   if(!identical(FALSE, output_base)) {
     if(is.null(output_base)) {
