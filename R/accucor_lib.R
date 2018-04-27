@@ -383,23 +383,23 @@ natural_abundance_correction <- function(path, sheet = NULL,
   default_purity <- list("C" = 0.99, "D" = 0.98, "N" = 0.99)
 
   if (missing(resolution)) {
-    stop("Must specify 'Resolution'")
+    stop("Must specify 'resolution'")
   }
   if (!is.numeric(resolution)) {
-    stop("'Resolution' must be an integer")
+    stop("'resolution' must be an integer")
   }
   if (as.numeric(resolution)%%1!=0) {
-    stop("'Resolution' must be an integer")
+    stop("'resolution' must be an integer")
   }
 
   if (missing(resolution_defined_at)) {
-    stop("Must specify the Mw the 'Resolution' is defined at ('ResDefAt' parameter)")
+    stop("Must specify the Mw the 'Resolution' is defined at ('resolution_defined_at' parameter)")
   }
   if (!is.numeric(resolution_defined_at)) {
-    stop("'ResDefAt' must be an integer")
+    stop("'resolution_defined_at' must be an integer")
   }
   if (resolution_defined_at%%1!=0) {
-    stop("'ResDefAt' must be an integer")
+    stop("'resolution_defined_at' must be an integer")
   }
   if (!is.null(purity)) {
     if (!is.numeric(resolution_defined_at)) {
