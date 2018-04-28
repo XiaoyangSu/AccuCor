@@ -4,14 +4,17 @@
 \alias{read_elmaven}
 \title{Natural Abundance correction for Carbon labeled samples}
 \usage{
-read_elmaven(path, sheet = NULL, columns_to_skip = NULL, filetype = NULL,
-  ...)
+read_elmaven(path, sheet = NULL, compound_database = NULL,
+  columns_to_skip = NULL, filetype = NULL, ...)
 }
 \arguments{
 \item{path}{Path to input file.}
 
 \item{sheet}{Name of sheet in xlsx file with columns 'compound',
 'formula', 'isotopelabel', and one column per sample.}
+
+\item{compound_database}{Path to compound database in csv format. Only used
+for classic MAVEN style input when formula is not specified.}
 
 \item{columns_to_skip}{Specify column heading to skip. All other columns not
 named 'compound', 'formula', and 'isotopelabel' will be assumed to be

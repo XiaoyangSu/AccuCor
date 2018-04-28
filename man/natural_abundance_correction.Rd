@@ -4,15 +4,18 @@
 \alias{natural_abundance_correction}
 \title{Natural Abundance correction for mass spectrometry data}
 \usage{
-natural_abundance_correction(path, sheet = NULL, output_base = NULL,
-  columns_to_skip = NULL, resolution, resolution_defined_at, purity = NULL,
-  report_pool_size = TRUE)
+natural_abundance_correction(path, sheet = NULL, compound_database = NULL,
+  output_base = NULL, columns_to_skip = NULL, resolution,
+  resolution_defined_at, purity = NULL, report_pool_size = TRUE)
 }
 \arguments{
 \item{path}{Path to xlsx file.}
 
 \item{sheet}{Name of sheet in xlsx file with columns 'compound',
 'formula', 'isotopelabel', and one column per sample.}
+
+\item{compound_database}{Path to compound database in csv format. Only used
+for classic MAVEN style input when formula is not specified.}
 
 \item{output_base}{Path to basename of output file, default is input path.
 `_corrected` will be appended to basename. Filetype is determined by
