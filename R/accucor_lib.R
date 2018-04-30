@@ -352,9 +352,13 @@ nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution, 
 #' @param path Path to xlsx file.
 #' @param sheet Name of sheet in xlsx file with columns 'compound',
 #'   'formula', 'isotopelabel', and one column per sample.
-#' @param output_base Path to basename of output file, default is input path.
-#'   `_corrected` will be appended to basename. Filetype is determined by
-#'   file extension.  If `FALSE` then no output file is written.
+#' @param compound_database Path to compound database in csv format. Only used
+#'   for classic MAVEN style input when formula is not specified.
+#' @param output_base Path to basename of output file, default is the basename
+#'   of the input path. `_corrected` will be appended. If `FALSE` then no
+#'   output file is written.
+#' @param output_filetype Filetype of the output file, one of: 'xls', xlsx',
+#'   'csv', or 'tsv'. The default is 'xlsx'.
 #' @param columns_to_skip Specify column heading to skip. All other columns not
 #'   named 'compound', 'formula', and 'isotopelabel' will be assumed to be
 #'   sample names.
@@ -372,8 +376,11 @@ nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution, 
 #' natural_abundance_correction("inst/extdata/C_Sample_Input_Simple.xlsx",
 #'                              Resolution=100000, ResDefAt=200)
 #' }
-natural_abundance_correction <- function(path, sheet = NULL,
+natural_abundance_correction <- function(path,
+                                         sheet = NULL,
+                                         compound_database = NULL,
                                          output_base = NULL,
+                                         output_filetype = 'xlsx',
                                          columns_to_skip = NULL,
                                          resolution,
                                          resolution_defined_at,
@@ -409,11 +416,21 @@ natural_abundance_correction <- function(path, sheet = NULL,
     }
   }
 
+  if (is.null(output_filetype)) {
+    output_filetype = tools::file_ext(path)
+  }
+  if (! (output_filetype %in% c('xls', 'xlsx', 'csv', 'tsv'))) {
+    stop(paste("Unsupported output_filetype: '", output_filetype, "'",
+               sep = ""))
+  }
 
   input_data <- read_elmaven(path = path, sheet = sheet,
+                             compound_database = compound_database,
                              columns_to_skip = columns_to_skip)
-  sample_col_names <- names(input_data$cleaned)[which(!(tolower(names(input_data$cleaned)) %in%
-                                                        tolower(c("compound", "formula", "isotope_label", "label_index"))))]
+  sample_col_names <- names(input_data$cleaned)[
+    which( !(tolower(names(input_data$cleaned))
+             %in% tolower(
+               c("compound", "formula", "isotope_label", "label_index"))))]
 
   if ( !(input_data$isotope %in% names(default_purity)) ) {
     stop(paste("Unsupported isotope '", input_data$isotope, "' detected", sep = ""))
@@ -494,7 +511,7 @@ natural_abundance_correction <- function(path, sheet = NULL,
     if(is.null(output_base)) {
       output_base = path
     }
-    write_output(OutputDataFrames, output_base)
+    write_output(OutputDataFrames, output_base, filetype = output_filetype)
   }
 
   return(OutputDataFrames)
