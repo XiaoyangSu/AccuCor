@@ -70,11 +70,11 @@ read_elmaven <- function(path, sheet = NULL, compound_database = NULL,
                                   .data$Formula, .data$IsotopeLabel)
     tmpInputDF_2 <- dplyr::select(tmpInputDF, -.data$Compound,
                                    -.data$Formula, -.data$IsotopeLabel)
-    tmpInputDF_2 <- dplyr::mutate_all(tmpInputDF_2, dplyr::funs(as.numeric(.)))
+    tmpInputDF_2 <- dplyr::mutate_all(tmpInputDF_2,
+                                      dplyr::funs(as.numeric(.data$.)))
     InputDF <- dplyr::bind_cols(tmpInputDF_1, tmpInputDF_2)
 
     # TODO Convert sample data to numeric
-    # sample_data %>% select(-Compound, -Formula, -IsotopeLabel) %>% mutate_all(funs(as.numeric(.)))
     if (any(is.na(InputDF$Formula))) {
       stop(paste("The formula of",i,"is unknown",sep=" "))
     }
@@ -93,7 +93,6 @@ read_elmaven <- function(path, sheet = NULL, compound_database = NULL,
 
   # Remove empty rows (sometimed introduced by El-MAVEN)
   InputDF <- InputDF[!(apply(InputDF, 1, function(x) all(is.na(x)))), ]
-  #dplyr::filter(InputDF, rowSums(is.na(.)) != ncol(.))
 
   # Remove columns that are not needed
   if(is.null(columns_to_skip)) {

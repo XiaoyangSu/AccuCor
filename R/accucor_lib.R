@@ -427,8 +427,10 @@ natural_abundance_correction <- function(path,
   input_data <- read_elmaven(path = path, sheet = sheet,
                              compound_database = compound_database,
                              columns_to_skip = columns_to_skip)
-  sample_col_names <- names(input_data$cleaned)[which(!(tolower(names(input_data$cleaned)) %in%
-                                                        tolower(c("compound", "formula", "isotope_label", "label_index"))))]
+  sample_col_names <- names(input_data$cleaned)[
+    which( !(tolower(names(input_data$cleaned))
+             %in% tolower(
+               c("compound", "formula", "isotope_label", "label_index"))))]
 
   if ( !(input_data$isotope %in% names(default_purity)) ) {
     stop(paste("Unsupported isotope '", input_data$isotope, "' detected", sep = ""))
