@@ -27,7 +27,7 @@ resolution <- 140000  # For Exactive, the Resolution is 100000, defined at Mw 20
 resolution_defined_at <- 200
 
 # Input file (example file included)
-carbon_input_file <- system.file("extdata", "C_Sample_Input_Simple.xlsx", package = "accucor")
+carbon_input_file <- system.file("extdata", "C_Sample_Input_Simple.csv", package = "accucor")
 
 # Output is written to [InputFile]_corrected.xlsx by default
 # The results are also returned as a named list of dataframes for further

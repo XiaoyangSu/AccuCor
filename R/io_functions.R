@@ -91,6 +91,10 @@ read_elmaven <- function(path, sheet = NULL, compound_database = NULL,
     }
   }
 
+  # Remove empty rows (sometimed introduced by El-MAVEN)
+  InputDF <- InputDF[!(apply(InputDF, 1, function(x) all(is.na(x)))), ]
+  #dplyr::filter(InputDF, rowSums(is.na(.)) != ncol(.))
+
   # Remove columns that are not needed
   if(is.null(columns_to_skip)) {
     columns_to_skip = c(
@@ -202,7 +206,8 @@ write_output <- function(dataframe_list, path, filetype = NULL, ...) {
   }
 
   if (filetype %in% c("xls", "xlsx")) {
-    output_path = paste(tools::file_path_sans_ext(path), "_corrected.", tools::file_ext(path), sep="")
+    output_path = paste(tools::file_path_sans_ext(path), "_corrected.", filetype, sep="")
+    message(paste("Output written to: '", output_path, "'", sep = ""))
     writexl::write_xlsx(dataframe_list, output_path, ...)
   } else if (filetype %in% c("csv", "txt", "tsv")) {
     if (filetype %in% c("csv", "txt")) {
@@ -215,7 +220,8 @@ write_output <- function(dataframe_list, path, filetype = NULL, ...) {
         next()
       }
       sheet_path <- paste(tools::file_path_sans_ext(path), "_", tolower(sheet),
-                          ".", tools::file_ext(path), sep="")
+                          ".", filetype, sep="")
+      message(paste("Output written to: '", sheet_path, "'", sep = ""))
       write_func(dataframe_list[[sheet]], sheet_path, ...)
     }
   } else {

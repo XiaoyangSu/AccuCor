@@ -5,8 +5,8 @@
 \title{Natural Abundance correction for mass spectrometry data}
 \usage{
 natural_abundance_correction(path, sheet = NULL, compound_database = NULL,
-  output_base = NULL, columns_to_skip = NULL, resolution,
-  resolution_defined_at, purity = NULL, report_pool_size = TRUE)
+  output_base = NULL, output_filetype = "xlsx", columns_to_skip = NULL,
+  resolution, resolution_defined_at, purity = NULL, report_pool_size = TRUE)
 }
 \arguments{
 \item{path}{Path to xlsx file.}
@@ -17,9 +17,12 @@ natural_abundance_correction(path, sheet = NULL, compound_database = NULL,
 \item{compound_database}{Path to compound database in csv format. Only used
 for classic MAVEN style input when formula is not specified.}
 
-\item{output_base}{Path to basename of output file, default is input path.
-`_corrected` will be appended to basename. Filetype is determined by
-file extension.  If `FALSE` then no output file is written.}
+\item{output_base}{Path to basename of output file, default is the basename
+of the input path. `_corrected` will be appended. If `FALSE` then no
+output file is written.}
+
+\item{output_filetype}{Filetype of the output file, one of: 'xls', xlsx',
+'csv', or 'tsv'. The default is 'xlsx'.}
 
 \item{columns_to_skip}{Specify column heading to skip. All other columns not
 named 'compound', 'formula', and 'isotopelabel' will be assumed to be

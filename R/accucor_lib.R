@@ -354,9 +354,11 @@ nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution, 
 #'   'formula', 'isotopelabel', and one column per sample.
 #' @param compound_database Path to compound database in csv format. Only used
 #'   for classic MAVEN style input when formula is not specified.
-#' @param output_base Path to basename of output file, default is input path.
-#'   `_corrected` will be appended to basename. Filetype is determined by
-#'   file extension.  If `FALSE` then no output file is written.
+#' @param output_base Path to basename of output file, default is the basename
+#'   of the input path. `_corrected` will be appended. If `FALSE` then no
+#'   output file is written.
+#' @param output_filetype Filetype of the output file, one of: 'xls', xlsx',
+#'   'csv', or 'tsv'. The default is 'xlsx'.
 #' @param columns_to_skip Specify column heading to skip. All other columns not
 #'   named 'compound', 'formula', and 'isotopelabel' will be assumed to be
 #'   sample names.
@@ -378,6 +380,7 @@ natural_abundance_correction <- function(path,
                                          sheet = NULL,
                                          compound_database = NULL,
                                          output_base = NULL,
+                                         output_filetype = 'xlsx',
                                          columns_to_skip = NULL,
                                          resolution,
                                          resolution_defined_at,
@@ -413,6 +416,13 @@ natural_abundance_correction <- function(path,
     }
   }
 
+  if (is.null(output_filetype)) {
+    output_filetype = tools::file_ext(path)
+  }
+  if (! (output_filetype %in% c('xls', 'xlsx', 'csv', 'tsv'))) {
+    stop(paste("Unsupported output_filetype: '", output_filetype, "'",
+               sep = ""))
+  }
 
   input_data <- read_elmaven(path = path, sheet = sheet,
                              compound_database = compound_database,
@@ -499,7 +509,7 @@ natural_abundance_correction <- function(path,
     if(is.null(output_base)) {
       output_base = path
     }
-    write_output(OutputDataFrames, output_base)
+    write_output(OutputDataFrames, output_base, filetype = output_filetype)
   }
 
   return(OutputDataFrames)
