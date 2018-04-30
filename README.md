@@ -11,38 +11,43 @@ tab-separated test (`.tsv`) files.
 
 
 ## Installation
-```
+```R
 install.packages("devtools")
 devtools::install_github("lparsons/accucor")
 ```
 
 ## Quickstart
 
-```
-# Use install.packages("accucor") to install accucor
+```R
 library(accucor)
 
 # Please make sure these parameters are accurate.
-resolution <- 140000  # For Exactive, the Resolution is 100000, defined at Mw 200#
+resolution <- 100000  # For Exactive, the Resolution is 100000, defined at Mw 200
 resolution_defined_at <- 200
 
 # Input file (example file included)
 carbon_input_file <- system.file("extdata", "C_Sample_Input_Simple.csv", package = "accucor")
 
-# Output is written to [InputFile]_corrected.xlsx by default
-# The results are also returned as a named list of dataframes for further
-# processing in R
+# Output is written to [input_file]_corrected.xlsx by default
 carbon_corrected <- natural_abundance_correction(
   path = carbon_input_file,
   resolution = resolution, 
   resolution_defined_at = resolution_defined_at)
+
+# The results are also returned as a named list of dataframes for further processing in R
+# "Original", "Corrected", "Normalized", "PoolBeforeDF", "PoolAfterDF"
+carbon_corrected
 ```
 
 ## Introduction
 
 ### Input files
 
-The input file must contain the following columns:
+Two types of input are accepted: 
+* Simple table including the compound, formula, isotope label, and values for the samples
+* Classic Maven copy/paste along with a separate compound database (e.g. `knowns.csv`).
+
+#### Simple table input must contain the following columns:
 
 * **Compound** - The name of the compound.
 
@@ -64,6 +69,15 @@ The input file must contain the following columns:
 
 Additional columns commonly exported from El-MAVEN will be automatically
 ignored.
+
+
+#### Classic Maven input
+
+* Data input file - one block per compound. The first row of a block is the compound name followed by sample names. The remaining rows in the block contain the isotople label (*e.g.* `C12 PARENT`, `C13-label-1`) in the first column followed by intensities for each sample.
+
+* Compound database file - A comma separated (`.csv`) file with columns for the compound name, molecular formula, and molecular weight.
+
+#### Input file formats
 
 Input and output files may be Excel (`.xls` and `.xlsx`), comma-separated text
 (`.csv`), or tab-separated test (`.tsv`) files. The type is automatically
