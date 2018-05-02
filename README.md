@@ -101,3 +101,30 @@ The isotope for correction is automatically determined by the contents of the
 15N isotope corretion. Only single labeled experiments are supported. Be sure
 to turn off isotope detection for other isotopes (see 
 [El-MAVEN isotope detection documentation](https://github.com/ElucidataInc/ElMaven/wiki/Labeled-LCMS-Workflow#isotope-detection)).
+
+
+### Citation
+If you use this software in your research, please cite the following paper
+(also see `citation("accucor")`):
+
+Su X, Lu W and Rabinowitz J (2017). “Metabolite Spectral Accuracy on Orbitraps.” _Analytical Chemistry_, *89*(11), pp. 5940-5948. doi:
+10.1021/acs.analchem.7b00396 (URL: http://doi.org/10.1021/acs.analchem.7b00396), PMID: 28471646, R package version 0.2.0 (2018),
+https://doi.org/10.1021/acs.analchem.7b00396, <URL: https://doi.org/10.1021/acs.analchem.7b00396>.
+
+A BibTeX entry for LaTeX users is
+
+```
+  @Article{,
+    title = {Metabolite Spectral Accuracy on Orbitraps},
+    author = {Xiaoyang Su and Wenyun Lu and Joshua D. Rabinowitz},
+    journal = {Analytical Chemistry},
+    doi = {10.1021/acs.analchem.7b00396},
+    volume = {89},
+    number = {11},
+    pages = {5940-5948},
+    year = {2017},
+    note = {PMID: 28471646, R package version 0.2.0 (2018)},
+    url = {https://doi.org/10.1021/acs.analchem.7b00396},
+    eprint = {https://doi.org/10.1021/acs.analchem.7b00396},
+  }
+```

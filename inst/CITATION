@@ -1,0 +1,18 @@
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("PMID: 28471646, R package version %s (%s)",
+                meta$Version, year)
+
+bibentry(bibtype = "Article",
+         title = "Metabolite Spectral Accuracy on Orbitraps",
+         author = c(person(given = "Xiaoyang", family = "Su"),
+                    person(given = "Wenyun", family = "Lu"),
+                    person(given = "Joshua D.", family = "Rabinowitz")),
+         journal = "Analytical Chemistry",
+         doi = "10.1021/acs.analchem.7b00396",
+         volume = "89",
+         number = "11",
+         pages = "5940-5948",
+         year = "2017",
+         note = note,
+         url = "https://doi.org/10.1021/acs.analchem.7b00396",
+         eprint = "https://doi.org/10.1021/acs.analchem.7b00396")
