@@ -6,7 +6,8 @@
 \usage{
 natural_abundance_correction(path, sheet = NULL, compound_database = NULL,
   output_base = NULL, output_filetype = "xlsx", columns_to_skip = NULL,
-  resolution, resolution_defined_at, purity = NULL, report_pool_size = TRUE)
+  resolution, resolution_defined_at = 200, purity = NULL,
+  report_pool_size_before_df = FALSE)
 }
 \arguments{
 \item{path}{Path to xlsx file.}
@@ -28,14 +29,15 @@ output file is written.}
 named 'compound', 'formula', and 'isotopelabel' will be assumed to be
 sample names.}
 
-\item{resolution}{For Exactive, the Resolution is 100000, defined at Mw 200}
+\item{resolution}{For Exactive, the resolution is 100000, defined at Mw 200}
 
-\item{resolution_defined_at}{Resolution defined at (in Mw), e.g. 200 Mw}
+\item{resolution_defined_at}{Mw at which the resolution is defined, default
+200 Mw}
 
 \item{purity}{Isotope purity, default: Carbon 0.99; Deuterium 0.98;
 Nitrogen 0.99}
 
-\item{report_pool_size}{default: TRUE}
+\item{report_pool_size_before_df}{Report PoolSizeBeforeDF, default = FALSE}
 }
 \value{
 Named list of matrices: 'Corrected', 'Normalized',
