@@ -354,6 +354,11 @@ nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution, 
 #'   'formula', 'isotopelabel', and one column per sample.
 #' @param compound_database Path to compound database in csv format. Only used
 #'   for classic MAVEN style input when formula is not specified.
+#' @param resolution For Exactive, the resolution is 100000, defined at Mw 200
+#' @param resolution_defined_at Mw at which the resolution is defined, default
+#'   200 Mw
+#' @param purity Isotope purity, default: Carbon 0.99; Deuterium 0.98;
+#'   Nitrogen 0.99
 #' @param output_base Path to basename of output file, default is the basename
 #'   of the input path. `_corrected` will be appended. If `FALSE` then no
 #'   output file is written.
@@ -362,11 +367,7 @@ nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution, 
 #' @param columns_to_skip Specify column heading to skip. All other columns not
 #'   named 'compound', 'formula', and 'isotopelabel' will be assumed to be
 #'   sample names.
-#' @param resolution For Exactive, the Resolution is 100000, defined at Mw 200
-#' @param resolution_defined_at Resolution defined at (in Mw), e.g. 200 Mw
-#' @param purity Isotope purity, default: Carbon 0.99; Deuterium 0.98;
-#'   Nitrogen 0.99
-#' @param report_pool_size default: TRUE
+#' @param report_pool_size_before_df Report PoolSizeBeforeDF, default = FALSE
 #' @importFrom rlang .data
 #' @return Named list of matrices: 'Corrected', 'Normalized',
 #'   'PoolBeforeDF', and 'PoolAfterDF'.
@@ -383,9 +384,9 @@ natural_abundance_correction <- function(path,
                                          output_filetype = 'xlsx',
                                          columns_to_skip = NULL,
                                          resolution,
-                                         resolution_defined_at,
+                                         resolution_defined_at = 200,
                                          purity = NULL,
-                                         report_pool_size = TRUE) {
+                                         report_pool_size_before_df = FALSE) {
 
   default_purity <- list("C" = 0.99, "D" = 0.98, "N" = 0.99)
 
@@ -399,9 +400,6 @@ natural_abundance_correction <- function(path,
     stop("'resolution' must be an integer")
   }
 
-  if (missing(resolution_defined_at)) {
-    stop("Must specify the Mw the 'Resolution' is defined at ('resolution_defined_at' parameter)")
-  }
   if (!is.numeric(resolution_defined_at)) {
     stop("'resolution_defined_at' must be an integer")
   }
@@ -463,15 +461,15 @@ natural_abundance_correction <- function(path,
     if (input_data$isotope == "C") {
       Corrected <- carbon_isotope_correction(Formula, DataMatrix, CurrentMetabolite$label_index,
                                              Resolution = resolution, ResDefAt = resolution_defined_at,
-                                             purity = purity, ReportPoolSize = report_pool_size)
+                                             purity = purity, ReportPoolSize = report_pool_size_before_df)
     } else if (input_data$isotope == "D") {
       Corrected <- deuterium_isotope_correction(Formula, DataMatrix, CurrentMetabolite$label_index,
                                              Resolution = resolution, ResDefAt = resolution_defined_at,
-                                             purity = purity, ReportPoolSize = report_pool_size)
+                                             purity = purity, ReportPoolSize = report_pool_size_before_df)
     } else if (input_data$isotope == "N") {
       Corrected <- nitrogen_isotope_correction(Formula, DataMatrix, CurrentMetabolite$label_index,
                                                 Resolution = resolution, ResDefAt = resolution_defined_at,
-                                                purity = purity, ReportPoolSize = report_pool_size)
+                                                purity = purity, ReportPoolSize = report_pool_size_before_df)
     } else {
       stop(paste("Unsupported isotope '", input_data$isotope, "' detected", sep = ""))
     }
@@ -504,8 +502,10 @@ natural_abundance_correction <- function(path,
   OutputDataFrames <- list("Original" = input_data$original,
                            "Corrected" = OutputDF,
                            "Normalized" = OutputPercentageDF,
-                           "PoolBeforeDF" = OutputPoolBeforeDF,
                            "PoolAfterDF" = OutputPoolAfterDF)
+  if(report_pool_size_before_df) {
+    OutputDataFrames$PoolBeforeDF = OutputPoolBeforeDF
+  }
 
   if(!identical(FALSE, output_base)) {
     if(is.null(output_base)) {

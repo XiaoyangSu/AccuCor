@@ -21,22 +21,32 @@ devtools::install_github("lparsons/accucor")
 ```R
 library(accucor)
 
-# Please make sure these parameters are accurate.
-resolution <- 100000  # For Exactive, the Resolution is 100000, defined at Mw 200
-resolution_defined_at <- 200
-
 # Input file (example file included)
+
 carbon_input_file <- system.file("extdata", "C_Sample_Input_Simple.csv", package = "accucor")
 
+
 # Output is written to [input_file]_corrected.xlsx by default
+# Be sure to specify the appropriate resolution.
+# For Exactive, the resolution is 100000, defined at 200 Mw
+
 carbon_corrected <- natural_abundance_correction(
   path = carbon_input_file,
-  resolution = resolution, 
-  resolution_defined_at = resolution_defined_at)
+  resolution = 100000)
+
 
 # The results are also returned as a named list of dataframes for further processing in R
 # "Original", "Corrected", "Normalized", "PoolBeforeDF", "PoolAfterDF"
+
 carbon_corrected
+
+
+# Purity is set to 0.99 for C and N, and 0.98 for H
+# Be sure to specify purity if your samples differ
+carbon_corrected <- natural_abundance_correction(
+  path = carbon_input_file,
+  resolution = 100000,
+  purity = 0.97)
 ```
 
 ## Introduction
