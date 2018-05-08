@@ -361,7 +361,7 @@ test_that("Nitrogen correction (Excel, Classic Maven Cut/Paste)", {
 })
 
 
-test_that("Carbon correction (csv, El-MAVEN export (w/set names))", {
+test_that("Carbon correction (csv, El-MAVEN export (with set names))", {
   resolution <- 140000
   resolution_defined_at <- 200
   input_file <- system.file("extdata", "elmaven_export.csv",
@@ -411,7 +411,7 @@ test_that("Carbon correction (csv, El-MAVEN export (w/set names))", {
 })
 
 
-test_that("Carbon correction (Excel, El-MAVEN export (w set names))", {
+test_that("Carbon correction (Excel, El-MAVEN export (with set names))", {
   resolution <- 140000
   resolution_defined_at <- 200
   input_file <- system.file("extdata", "elmaven_export.xlsx",
@@ -444,6 +444,52 @@ test_that("Carbon correction (Excel, El-MAVEN export (w set names))", {
   )
 
   # Must convert to dataframe due to https://github.com/tidyverse/dplyr/issues/2751
+  expect_equal(as.data.frame(corrected$Original),
+               as.data.frame(expected_output$Original))
+  expect_equal(as.data.frame(corrected$Corrected),
+               as.data.frame(expected_output$Corrected))
+  expect_equal(as.data.frame(corrected$Normalized),
+               as.data.frame(expected_output$Normalized))
+  expect_equal(as.data.frame(corrected$PoolAfterDF),
+               as.data.frame(expected_output$PoolAfterDF))
+})
+
+
+test_that("Carbon correction (csv, El-MAVEN export (w/o names))", {
+  resolution <- 140000
+  input_file <- system.file("extdata", "elmaven_d2_export.csv",
+                            package = "accucor")
+
+  corrected <- natural_abundance_correction(
+    path = input_file,
+    resolution = resolution,
+    output_base = FALSE)
+
+  read_expected <- function(file, sheet) {
+    expected <- readxl::read_excel(path = file, sheet = sheet)
+    expected <- dplyr::mutate_at(expected,
+                                 dplyr::vars(dplyr::ends_with("_Label")),
+                                 as.integer)
+  }
+  expected_output <- list(
+    "Original" = read_expected(
+      system.file("extdata", "elmaven_d2_export_corrected.xlsx", package = "accucor"),
+      sheet = 1),
+    "Corrected" = read_expected(
+      system.file("extdata", "elmaven_d2_export_corrected.xlsx", package = "accucor"),
+      sheet = "Corrected"),
+    "Normalized" = read_expected(
+      system.file("extdata", "elmaven_d2_export_corrected.xlsx", package = "accucor"),
+      sheet = "Normalized"),
+    "PoolAfterDF" = read_expected(
+      system.file("extdata", "elmaven_d2_export_corrected.xlsx", package = "accucor"),
+      sheet = "PoolAfterDF")
+  )
+
+  # Must convert to dataframe due to https://github.com/tidyverse/dplyr/issues/2751
+  # Label column parses as different type
+  expected_output$Original$label <-
+    sapply(expected_output$Original$label, as.character)
   expect_equal(as.data.frame(corrected$Original),
                as.data.frame(expected_output$Original))
   expect_equal(as.data.frame(corrected$Corrected),

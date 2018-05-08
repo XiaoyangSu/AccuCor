@@ -164,18 +164,22 @@ create_label_count <- function(isotope_labels) {
   label_counts <- as.integer(label_counts)
   if (any(is.na(label_counts))) {
     bad_labels <- is.na(label_counts)
-    stop(paste("Unable to parse isotope labels: ",
-               isotope_labels[bad_labels], sep = ""))
+    stop(paste0("Unable to parse isotope labels: ",
+               paste(isotope_labels[bad_labels], collapse = ", ")))
   }
   return(list(label_counts = label_counts, isotope = isotope_info$isotope))
 }
 
 
 determine_isotope <- function(isotope_labels) {
-  if(any(grepl("^D", isotope_labels))) {
+  if(any(grepl("^D-", isotope_labels))) {
     parent_prefix = "C12 PARENT"
     isotope_prefix = "D-label-"
     isotope = "D"
+  } else if(any(grepl("^D2-", isotope_labels))) {
+      parent_prefix = "C12 PARENT"
+      isotope_prefix = "D2-label-"
+      isotope = "D"
   } else if(any(grepl("^C13", isotope_labels))) {
     parent_prefix = "C12 PARENT"
     isotope_prefix = "C13-label-"
