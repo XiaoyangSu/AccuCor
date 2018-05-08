@@ -390,6 +390,14 @@ natural_abundance_correction <- function(path,
 
   default_purity <- list("C" = 0.99, "D" = 0.98, "N" = 0.99)
 
+  if (missing(path) || path == "") {
+    stop("Must specify 'path' to input file")
+  }
+
+  if (!file.exists(path)) {
+    stop(sprintf("Unable to find file '%s'", path))
+  }
+
   if (missing(resolution)) {
     stop("Must specify 'resolution'")
   }
