@@ -29,8 +29,9 @@ read_elmaven <- function(path, sheet = NULL, compound_database = NULL,
   # TODO Break this out to a function
   # Classic MAVEN style import
   if (!is.null(compound_database)) {
-    compounds <- readr::read_csv(compound_database, col_names = FALSE)
-    names(compounds) <- c("Compound", "Formula", "Molecular_Weight")
+    compounds <- readr::read_csv(compound_database)
+    names(compounds)[which(tolower(names(compounds)) == 'compound')] <- "Compound"
+    names(compounds)[which(tolower(names(compounds)) == 'formula')] <- "Formula"
 
     if (filetype %in% c("xls", "xlsx")) {
       InputDF <- readxl::read_excel(path, sheet = sheet, col_names = FALSE, ...)
@@ -79,6 +80,7 @@ read_elmaven <- function(path, sheet = NULL, compound_database = NULL,
       stop(paste("The formula of",i,"is unknown",sep=" "))
     }
 
+  # El-Maven style import
   } else {
     if (filetype %in% c("xls", "xlsx")) {
       InputDF <- readxl::read_excel(path, sheet = sheet, ...)
@@ -97,7 +99,7 @@ read_elmaven <- function(path, sheet = NULL, compound_database = NULL,
   # Remove columns that are not needed
   if(is.null(columns_to_skip)) {
     columns_to_skip = c(
-      "label", "metaGroupId", "groupId", "goodPeakCount", "medMz", "medRt",
+      "label", "goodPeakCount", "medMz", "medRt",
       "maxQuality", "compoundId", "expectedRtDiff", "ppmDiff", "parent"
     )
   }
@@ -129,25 +131,39 @@ read_elmaven <- function(path, sheet = NULL, compound_database = NULL,
                                                tolower(c(columns_to_skip,
                                                          "compound",
                                                          "formula",
-                                                         "isotopelabel"))))]
+                                                         "isotopelabel",
+                                                         "metaGroupId",
+                                                         "groupId"))))]
   if (length(sample_col_names) == 0) {
     stop(paste("Unable to find sample columns in file: ", path, sep = ""))
   }
 
-  # Multiple peak groups for a given compound is not supported
-  tmp <- dplyr::group_by(InputDF, rlang::UQ(as.name(compound_col_name)))
-  tmp <- dplyr::summarise(tmp, peak_group_count =
-                     sum(grepl("PARENT", rlang::UQ(as.name(isotope_label_col_name)))))
-  tmp <- dplyr::filter(tmp, .data$peak_group_count > 1)
-  tmp <- dplyr::pull(tmp, rlang::UQ(as.name(compound_col_name)))
-  if (! rlang::is_empty(tmp)) {
-    stop(paste("Multiple peak groups detected for: ", tmp, sep = ""))
+  if ('metaGroupId' %in% names(InputDF) && (! all(InputDF$metaGroupId == 0))) {
+    metaGroupId <- InputDF$metaGroupId
+  } else {
+    # Generate metaGroupId
+    tmp <- dplyr::group_by(InputDF, rlang::UQ(as.name(compound_col_name)))
+    metaGroupId <- dplyr::group_indices(tmp)
+    # Check to be sure there is only one peak group per compound
+    tmp <- dplyr::summarise(tmp, peak_group_count =
+                              sum(grepl("PARENT", rlang::UQ(as.name(isotope_label_col_name)))))
+    tmp <- dplyr::filter(tmp, .data$peak_group_count > 1)
+    tmp <- dplyr::pull(tmp, rlang::UQ(as.name(compound_col_name)))
+    if (! rlang::is_empty(tmp)) {
+      stop(sprintf("Multiple peak groups detected for '%s', use metaGroupId column to distinguish peak groups (El-Maven >= 0.4)", tmp))
+    }
   }
 
+
+  # Create column of counts for isotopes
+  # Only one type of isotope at a time is supported
   label_counts <- create_label_count(isotope_labels)
 
+  # Combine cleaned data
   cleaned_dataframe <- dplyr::bind_cols(
-    dplyr::select(InputDF, compound = compound_col_num,
+    metaGroupId = as.factor(metaGroupId),
+    dplyr::select(InputDF,
+                  compound = compound_col_num,
                   formula = formula_col_num,
                   isotope_label = isotope_label_col_num),
     label_index = label_counts$label_counts,

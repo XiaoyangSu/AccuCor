@@ -1,7 +1,7 @@
 Package: accucor
 Type: Package
 Title: Natural Abundance Correction of Mass Spectrometer Data
-Version: 0.2.1
+Version: 0.2.2.9000
 Date: 2018-05-02
 Authors@R: as.person(c(
     "Xiaoyang Su <xs137@rwjms.rutgers.edu> [aut, cre]", 

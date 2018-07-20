@@ -436,7 +436,7 @@ natural_abundance_correction <- function(path,
   sample_col_names <- names(input_data$cleaned)[
     which( !(tolower(names(input_data$cleaned))
              %in% tolower(
-               c("compound", "formula", "isotope_label", "label_index"))))]
+               c("compound", "formula", "isotope_label", "label_index", "metaGroupId"))))]
 
   if ( !(input_data$isotope %in% names(default_purity)) ) {
     stop(paste("Unsupported isotope '", input_data$isotope, "' detected", sep = ""))
@@ -455,15 +455,16 @@ natural_abundance_correction <- function(path,
   OutputLabel <- NULL
   OutputPoolCompound <- NULL
 
-  for (i in unique(input_data$cleaned$compound)) {
-    CurrentMetabolite <- dplyr::filter(input_data$cleaned, .data$compound==i)
+  for (i in unique(input_data$cleaned$metaGroupId)) {
+    CurrentMetabolite <- dplyr::filter(input_data$cleaned, .data$metaGroupId==i)
+    CurrentCompoundName <- CurrentMetabolite$compound[1]
     Formula=as.character(CurrentMetabolite$formula[1])
     if(length(Formula)==0 || is.na(Formula)) {
       print(paste("The formula of",i,"is unknown",sep=" "))
       break
     }
     DataMatrix <- data.matrix(dplyr::select(CurrentMetabolite, -.data$compound, -.data$formula,
-                                            -.data$isotope_label, -.data$label_index)
+                                            -.data$isotope_label, -.data$label_index, -.data$metaGroupId)
     )
     DataMatrix[is.na(DataMatrix)] <- 0
     if (input_data$isotope == "C") {
@@ -486,9 +487,9 @@ natural_abundance_correction <- function(path,
     OutputPercentageMatrix <- rbind(OutputPercentageMatrix, CorrectedPercentage)
     OutputPoolBefore <- rbind(OutputPoolBefore, colSums(DataMatrix))
     OutputPoolAfter <- rbind(OutputPoolAfter, colSums(Corrected))
-    OutputCompound <- append(OutputCompound, rep(i,nrow(Corrected)))
+    OutputCompound <- append(OutputCompound, rep(CurrentCompoundName, nrow(Corrected)))
     OutputLabel <- append(OutputLabel, c(0:(nrow(Corrected)-1)))
-    OutputPoolCompound <- append(OutputPoolCompound, i)
+    OutputPoolCompound <- append(OutputPoolCompound, CurrentCompoundName)
   }
 
   compound_label_tbl <- dplyr::tibble(OutputCompound, OutputLabel)

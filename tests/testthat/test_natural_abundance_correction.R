@@ -499,3 +499,49 @@ test_that("Carbon correction (csv, El-MAVEN export (w/o names))", {
   expect_equal(as.data.frame(corrected$PoolAfterDF),
                as.data.frame(expected_output$PoolAfterDF))
 })
+
+
+test_that("Carbon correction (csv, El-MAVEN export, multiple groups per compound)", {
+  resolution <- 140000
+  input_file <- system.file("extdata", "alanine_three_peak_groups.csv",
+                            package = "accucor")
+
+  corrected <- natural_abundance_correction(
+    path = input_file,
+    resolution = resolution,
+    output_base = FALSE)
+
+  read_expected <- function(file, sheet) {
+    expected <- readxl::read_excel(path = file, sheet = sheet)
+    expected <- dplyr::mutate_at(expected,
+                                 dplyr::vars(dplyr::ends_with("_Label")),
+                                 as.integer)
+  }
+  expected_output <- list(
+    "Original" = read_expected(
+      system.file("extdata", "alanine_three_peak_groups_corrected.xlsx", package = "accucor"),
+      sheet = 1),
+    "Corrected" = read_expected(
+      system.file("extdata", "alanine_three_peak_groups_corrected.xlsx", package = "accucor"),
+      sheet = "Corrected"),
+    "Normalized" = read_expected(
+      system.file("extdata", "alanine_three_peak_groups_corrected.xlsx", package = "accucor"),
+      sheet = "Normalized"),
+    "PoolAfterDF" = read_expected(
+      system.file("extdata", "alanine_three_peak_groups_corrected.xlsx", package = "accucor"),
+      sheet = "PoolAfterDF")
+  )
+
+  # Must convert to dataframe due to https://github.com/tidyverse/dplyr/issues/2751
+  # Label column parses as different type
+  expected_output$Original$label <-
+    sapply(expected_output$Original$label, as.character)
+  expect_equal(as.data.frame(corrected$Original),
+               as.data.frame(expected_output$Original))
+  expect_equal(as.data.frame(corrected$Corrected),
+               as.data.frame(expected_output$Corrected))
+  expect_equal(as.data.frame(corrected$Normalized),
+               as.data.frame(expected_output$Normalized))
+  expect_equal(as.data.frame(corrected$PoolAfterDF),
+               as.data.frame(expected_output$PoolAfterDF))
+})
