@@ -2,9 +2,9 @@
 
 [![Travis build status](https://travis-ci.org/lparsons/accucor.svg?branch=master)](https://travis-ci.org/lparsons/accucor)
 
-AccuCor is an isotope natural abundance correction algorithm that is needed 
+AccuCor is an isotope natural abundance correction algorithm that is needed
 especially for high resolution mass spectrometers. AccuCor supports 13C, 2H and
-15N isotope corretion. 
+15N isotope corretion.
 
 AccuCor accepts Excel (`.xls` and `.xlsx`), comma-separated text (`.csv`), or
 tab-separated test (`.tsv`) files.
@@ -53,39 +53,46 @@ carbon_corrected <- natural_abundance_correction(
 
 ### Input files
 
-Two types of input are accepted: 
-* Simple table including the compound, formula, isotope label, and values for the samples
-* Classic Maven copy/paste along with a separate compound database (e.g. `knowns.csv`).
+Two types of input are accepted:
+*   *Simple table* including the compound, formula, isotope label, and values for
+    the samples
+
+*   *Classic Maven* copy/paste along with a separate compound database (e.g.
+    `knowns.csv`).
 
 #### Simple table input must contain the following columns:
 
-* **Compound** - The name of the compound.
+*   **Compound** - The name of the compound.
 
-  *NOTE* - Multiple peaks per compound is not yet supported (see 
-  [Issue #8](https://github.com/lparsons/Isotope-Natural-Abundance-Correction/issues/8)).
-  
-* **Formula** - The chemical formula for the compound.
+*   **Formula** - The chemical formula for the compound.
 
-   *NOTE* - Previous versions required the compound database (`KNOWNS.csv`) as
-   well as the output data. This is no longer necessary, as the formula is
-   included the exported data from El-MAVEN.
-   
-* **IsotopeLabel** - The isotope labeling. Currently `C12 PARENT` for the parent
-  (unlabeled) peak group and `C13-label-#` for the labeled peak groups.
-  `D-label-#` and `N15-label-` are also recognized for Deuterium and Nitrogen
-  labeled data, respectively.
-  
-* **Samples** - One column for the intensity data for each sample.
+*   **IsotopeLabel** - The isotope labeling. Currently `C12 PARENT` for the
+    parent (unlabeled) peak group and `C13-label-#` for the labeled peak groups.
+    `D-label-#` and `N15-label-` are also recognized for Deuterium and Nitrogen
+    labeled data, respectively.
+
+*   **Samples** - One column for the intensity data for each sample.
+
+*   **metaGroupId** - *OPTIONAL* - Used to support multiple peak groups per
+    compound. Exported from El-MAVEN (version 0.4.0 and greater).
 
 Additional columns commonly exported from El-MAVEN will be automatically
 ignored.
 
+*NOTE* - Previous versions required the compound database (`KNOWNS.csv`) as
+well as the output data. This is no longer necessary, as the formula is
+included the exported data from El-MAVEN.
+
 
 #### Classic Maven input
 
-* Data input file - one block per compound. The first row of a block is the compound name followed by sample names. The remaining rows in the block contain the isotople label (*e.g.* `C12 PARENT`, `C13-label-1`) in the first column followed by intensities for each sample.
+*   Data input file - one block per compound. The first row of a block is the
+    compound name followed by sample names. The remaining rows in the block
+    contain the isotople label (*e.g.* `C12 PARENT`, `C13-label-1`) in the first
+    column followed by intensities for each sample.
 
-* Compound database file - A comma separated (`.csv`) file with columns for the compound name, molecular formula, and molecular weight.
+*   Compound database file - A comma separated (`.csv`) file with columns for the
+    compound name (compound) and molecular formula (formula).
 
 #### Input file formats
 
@@ -96,10 +103,10 @@ determined by file extension.
 
 ### Isotope support
 
-The isotope for correction is automatically determined by the contents of the 
+The isotope for correction is automatically determined by the contents of the
 `isotopeLabel` column in your input data. AccuCor supports 13C, 2H and
 15N isotope corretion. Only single labeled experiments are supported. Be sure
-to turn off isotope detection for other isotopes (see 
+to turn off isotope detection for other isotopes (see
 [El-MAVEN isotope detection documentation](https://github.com/ElucidataInc/ElMaven/wiki/Labeled-LCMS-Workflow#isotope-detection)).
 
 
@@ -107,9 +114,9 @@ to turn off isotope detection for other isotopes (see
 If you use this software in your research, please cite the following paper
 (also see `citation("accucor")`):
 
-Su X, Lu W and Rabinowitz J (2017). “Metabolite Spectral Accuracy on Orbitraps.” _Analytical Chemistry_, *89*(11), pp. 5940-5948. doi:
-10.1021/acs.analchem.7b00396 (URL: http://doi.org/10.1021/acs.analchem.7b00396), PMID: 28471646, R package version 0.2.0 (2018),
-https://doi.org/10.1021/acs.analchem.7b00396, <URL: https://doi.org/10.1021/acs.analchem.7b00396>.
+Su X, Lu W and Rabinowitz J (2017). "Metabolite Spectral Accuracy on Orbitraps." *Analytical Chemistry*, *89*(11), pp. 5940-5948. doi:
+10.1021/acs.analchem.7b00396 (URL: [http://doi.org/10.1021/acs.analchem.7b0039](http://doi.org/10.1021/acs.analchem.7b0039)),
+PMID: 28471646, R package version 0.2.3 (2018).
 
 A BibTeX entry for LaTeX users is
 
@@ -123,7 +130,7 @@ A BibTeX entry for LaTeX users is
     number = {11},
     pages = {5940-5948},
     year = {2017},
-    note = {PMID: 28471646, R package version 0.2.0 (2018)},
+    note = {PMID: 28471646, R package version 0.2.3 (2018)},
     url = {https://doi.org/10.1021/acs.analchem.7b00396},
     eprint = {https://doi.org/10.1021/acs.analchem.7b00396},
   }
