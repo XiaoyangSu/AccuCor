@@ -21,6 +21,7 @@ Imports:
     readxl,
     readr,
     rlang,
+    tibble,
     writexl
 RoxygenNote: 6.0.1
 Suggests: testthat

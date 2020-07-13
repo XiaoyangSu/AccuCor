@@ -349,9 +349,12 @@ nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution, 
 #' \code{C13-label-#}. \code{D-label-#}. or \code{N15-label-#}. Parent
 #' (unlabeled) compounds are specified by \code{C12 PARENT}.
 #'
-#' @param path Path to xlsx file.
+#' @param data Path to input data file (xslx, xls, csv, txt, or tsv) OR
+#'   dataframe. If dataframe is specified, specify output_base to output files
+#'   automatically written.
 #' @param sheet Name of sheet in xlsx file with columns 'compound',
-#'   'formula', 'isotopelabel', and one column per sample.
+#'   'formula', 'isotopelabel', and one column per sample. Defaults to the
+#'   first sheet.
 #' @param compound_database Path to compound database in csv format. Only used
 #'   for classic MAVEN style input when formula is not specified.
 #' @param resolution For Exactive, the resolution is 100000, defined at Mw 200
@@ -368,6 +371,7 @@ nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution, 
 #'   named 'compound', 'formula', and 'isotopelabel' will be assumed to be
 #'   sample names.
 #' @param report_pool_size_before_df Report PoolSizeBeforeDF, default = FALSE
+#' @param path Deprecated. Specify path to input data file (alias for `data`).
 #' @importFrom rlang .data
 #' @return Named list of matrices: 'Corrected', 'Normalized',
 #'   'PoolBeforeDF', and 'PoolAfterDF'.
@@ -377,7 +381,7 @@ nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution, 
 #' natural_abundance_correction("inst/extdata/C_Sample_Input_Simple.xlsx",
 #'                              Resolution=100000, ResDefAt=200)
 #' }
-natural_abundance_correction <- function(path,
+natural_abundance_correction <- function(data,
                                          sheet = NULL,
                                          compound_database = NULL,
                                          output_base = NULL,
@@ -386,16 +390,56 @@ natural_abundance_correction <- function(path,
                                          resolution,
                                          resolution_defined_at = 200,
                                          purity = NULL,
-                                         report_pool_size_before_df = FALSE) {
+                                         report_pool_size_before_df = FALSE,
+                                         path = NULL) {
 
   default_purity <- list("C" = 0.99, "D" = 0.98, "N" = 0.99)
 
-  if (missing(path) || path == "") {
-    stop("Must specify 'path' to input file")
+  # Specify `path` as named variable, backwards compatibility
+  if (missing(data)) {
+    if (!missing(path) || path != "") {
+      data = path
+    }
   }
 
-  if (!file.exists(path)) {
-    stop(sprintf("Unable to find file '%s'", path))
+  if (missing(data) || data == "") {
+    stop("Must specify 'data' (data frame or path to input file)")
+  }
+
+  # Determine if data is data.frame or path
+  if (is.data.frame(data)) {
+    # Use data frame directly
+    # Created "cleaned" data frame with normalized labels
+    cleaned_dataframe <- clean_data_frame(data, columns_to_skip = columns_to_skip)
+
+    # Determine isotope
+    isotope <- determine_isotope(cleaned_dataframe$isotope_label)$isotope
+
+    input_data <- (list(original = tibble::as_tibble(data),
+                        cleaned = cleaned_dataframe,
+                        isotope = isotope))
+    # Only output files if output_base is specified
+    if (is.null(output_base)) {
+      output_base = FALSE
+    }
+  } else if (is.character(data) & length(data) == 1) {
+    # Data is a string
+    if (!file.exists(data)) {
+      stop(sprintf("Unable to find file '%s'", path))
+    }
+    if (is.null(output_filetype)) {
+      output_filetype = tools::file_ext(path)
+    }
+    if (! (output_filetype %in% c('xls', 'xlsx', 'csv', 'tsv'))) {
+      stop(paste("Unsupported output_filetype: '", output_filetype, "'",
+                 sep = ""))
+    }
+    # Parse input file
+    input_data <- read_elmaven(path = path, sheet = sheet,
+                               compound_database = compound_database,
+                               columns_to_skip = columns_to_skip)
+  } else {
+    stop(sprintf("Argument 'data' must be either a data.frame or a string"))
   }
 
   if (missing(resolution)) {
@@ -422,17 +466,7 @@ natural_abundance_correction <- function(path,
     }
   }
 
-  if (is.null(output_filetype)) {
-    output_filetype = tools::file_ext(path)
-  }
-  if (! (output_filetype %in% c('xls', 'xlsx', 'csv', 'tsv'))) {
-    stop(paste("Unsupported output_filetype: '", output_filetype, "'",
-               sep = ""))
-  }
-
-  input_data <- read_elmaven(path = path, sheet = sheet,
-                             compound_database = compound_database,
-                             columns_to_skip = columns_to_skip)
+  # Determine sample columns
   sample_col_names <- names(input_data$cleaned)[
     which( !(tolower(names(input_data$cleaned))
              %in% tolower(

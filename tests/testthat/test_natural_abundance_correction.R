@@ -1,19 +1,11 @@
 context("Natural abundance correction")
 library(accucor)
 
-check_output <- function(corrected, expected, check.attributes=TRUE) {
-  expect_equal(corrected$Original,
-               expected$Original,
-               check.attributes=check.attributes)
-  expect_equal(corrected$Corrected,
-               expected$Corrected,
-               check.attributes=check.attributes)
-  expect_equal(corrected$Normalized,
-               expected$Normalized,
-               check.attributes=check.attributes)
-  expect_equal(corrected$PoolAfterDF,
-               expected$PoolAfterDF,
-               check.attributes=check.attributes)
+read_expected <- function(file, sheet) {
+  expected <- readxl::read_excel(path = file, sheet = sheet)
+  expected <- dplyr::mutate_at(expected,
+                               dplyr::vars(dplyr::ends_with("_Label")),
+                               as.integer)
 }
 
 test_that("Carbon correction (Excel, simple format)", {
@@ -26,12 +18,6 @@ test_that("Carbon correction (Excel, simple format)", {
     output_base = FALSE,
     resolution = resolution)
 
-  read_expected <- function(file, sheet) {
-    expected <- readxl::read_excel(path = file, sheet = sheet)
-    expected <- dplyr::mutate_at(expected,
-                                 dplyr::vars(dplyr::ends_with("_Label")),
-                                 as.integer)
-  }
   expected_output <- list(
     "Original" = read_expected(
       system.file("extdata", "C_Sample_Input_Simple.xlsx", package = "accucor"),
@@ -47,7 +33,7 @@ test_that("Carbon correction (Excel, simple format)", {
       sheet = "PoolAfterDF")
   )
 
-  check_output(corrected, expected_output)
+  expect_equal(corrected, expected_output)
 })
 
 
@@ -62,12 +48,6 @@ test_that("PoolBeforeDF parameter", {
     report_pool_size_before_df = TRUE,
     resolution = resolution)
 
-  read_expected <- function(file, sheet) {
-    expected <- readxl::read_excel(path = file, sheet = sheet)
-    expected <- dplyr::mutate_at(expected,
-                                 dplyr::vars(dplyr::ends_with("_Label")),
-                                 as.integer)
-  }
   expected_output <- list(
     "Original" = read_expected(
       system.file("extdata", "C_Sample_Input_Simple.xlsx", package = "accucor"),
@@ -86,7 +66,7 @@ test_that("PoolBeforeDF parameter", {
       sheet = "PoolBeforeDF")
   )
 
-  check_output(corrected, expected_output)
+  expect_equal(corrected, expected_output)
 })
 
 test_that("Carbon correction (csv, simple format)", {
@@ -100,12 +80,6 @@ test_that("Carbon correction (csv, simple format)", {
     output_base = FALSE,
     resolution = resolution, resolution_defined_at = resolution_defined_at)
 
-  read_expected <- function(file, sheet) {
-    expected <- readxl::read_excel(path = file, sheet = sheet)
-    expected <- dplyr::mutate_at(expected,
-                                 dplyr::vars(dplyr::ends_with("_Label")),
-                                 as.integer)
-  }
   expected_output <- list(
     "Original" = read_expected(
       system.file("extdata", "C_Sample_Input_Simple.xlsx", package = "accucor"),
@@ -121,7 +95,7 @@ test_that("Carbon correction (csv, simple format)", {
       sheet = "PoolAfterDF")
   )
 
-  check_output(corrected, expected_output)
+  expect_equal(corrected, expected_output)
 })
 
 
@@ -137,12 +111,6 @@ test_that("Carbon correction (Excel, Classic MAVEN copy/paste)", {
     output_base = FALSE,
     resolution = resolution, resolution_defined_at = resolution_defined_at)
 
-  read_expected <- function(file, sheet) {
-    expected <- readxl::read_excel(path = file, sheet = sheet)
-    expected <- dplyr::mutate_at(expected,
-                                 dplyr::vars(dplyr::ends_with("_Label")),
-                                 as.integer)
-  }
   expected_output <- list(
     "Original" = read_expected(
       system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
@@ -158,7 +126,7 @@ test_that("Carbon correction (Excel, Classic MAVEN copy/paste)", {
       sheet = "PoolAfterDF")
   )
 
-  check_output(corrected, expected_output)
+  expect_equal(corrected, expected_output)
 })
 
 
@@ -173,12 +141,6 @@ test_that("Deuterium correction (Excel, simple format)", {
     output_base = FALSE,
     resolution = resolution, resolution_defined_at = resolution_defined_at)
 
-  read_expected <- function(file, sheet) {
-    expected <- readxl::read_excel(path = file, sheet = sheet)
-    expected <- dplyr::mutate_at(expected,
-                                 dplyr::vars(dplyr::ends_with("_Label")),
-                                 as.integer)
-  }
   expected_output <- list(
     "Original" = read_expected(
       system.file("extdata", "D_Sample_Input_Simple.xlsx", package = "accucor"),
@@ -194,7 +156,7 @@ test_that("Deuterium correction (Excel, simple format)", {
       sheet = "PoolAfterDF")
   )
 
-  check_output(corrected, expected_output)
+  expect_equal(corrected, expected_output)
 })
 
 
@@ -211,12 +173,6 @@ test_that("Deuterium correction (Excel, Classic Maven Cut/Paste)", {
     output_base = FALSE,
     resolution = resolution, resolution_defined_at = resolution_defined_at)
 
-  read_expected <- function(file, sheet) {
-    expected <- readxl::read_excel(path = file, sheet = sheet)
-    expected <- dplyr::mutate_at(expected,
-                                 dplyr::vars(dplyr::ends_with("_Label")),
-                                 as.integer)
-  }
   expected_output <- list(
     "Original" = read_expected(
       system.file("extdata", "D_Sample_Input_Simple.xlsx", package = "accucor"),
@@ -232,7 +188,7 @@ test_that("Deuterium correction (Excel, Classic Maven Cut/Paste)", {
       sheet = "PoolAfterDF")
   )
 
-  check_output(corrected, expected_output)
+  expect_equal(corrected, expected_output)
 })
 
 
@@ -247,12 +203,6 @@ test_that("Nitrogen correction (Excel, simple format)", {
     output_base = FALSE,
     resolution = resolution, resolution_defined_at = resolution_defined_at)
 
-  read_expected <- function(file, sheet) {
-    expected <- readxl::read_excel(path = file, sheet = sheet)
-    expected <- dplyr::mutate_at(expected,
-                                 dplyr::vars(dplyr::ends_with("_Label")),
-                                 as.integer)
-  }
   expected_output <- list(
     "Original" = read_expected(
       system.file("extdata", "N_Sample_Input_Simple.xlsx", package = "accucor"),
@@ -268,7 +218,7 @@ test_that("Nitrogen correction (Excel, simple format)", {
       sheet = "PoolAfterDF")
   )
 
-  check_output(corrected, expected_output)
+  expect_equal(corrected, expected_output)
 })
 
 
@@ -285,12 +235,6 @@ test_that("Nitrogen correction (Excel, Classic Maven Cut/Paste)", {
     output_base = FALSE,
     resolution = resolution, resolution_defined_at = resolution_defined_at)
 
-  read_expected <- function(file, sheet) {
-    expected <- readxl::read_excel(path = file, sheet = sheet)
-    expected <- dplyr::mutate_at(expected,
-                                 dplyr::vars(dplyr::ends_with("_Label")),
-                                 as.integer)
-  }
   expected_output <- list(
     "Original" = read_expected(
       system.file("extdata", "N_Sample_Input_Simple.xlsx", package = "accucor"),
@@ -306,7 +250,7 @@ test_that("Nitrogen correction (Excel, Classic Maven Cut/Paste)", {
       sheet = "PoolAfterDF")
   )
 
-  check_output(corrected, expected_output)
+  expect_equal(corrected, expected_output)
 })
 
 
@@ -324,12 +268,6 @@ test_that("Carbon correction (csv, El-MAVEN export (with set names))", {
     output_base = FALSE,
     resolution = resolution, resolution_defined_at = resolution_defined_at))
 
-  read_expected <- function(file, sheet) {
-    expected <- readxl::read_excel(path = file, sheet = sheet)
-    expected <- dplyr::mutate_at(expected,
-                                 dplyr::vars(dplyr::ends_with("_Label")),
-                                 as.integer)
-  }
   expected_output <- list(
     "Original" = read_expected(
       system.file("extdata", "elmaven_export_corrected.xlsx", package = "accucor"),
@@ -345,7 +283,7 @@ test_that("Carbon correction (csv, El-MAVEN export (with set names))", {
       sheet = "PoolAfterDF")
   )
 
-  check_output(corrected, expected_output, check.attributes = FALSE)
+  expect_equivalent(corrected, expected_output)
 })
 
 
@@ -360,12 +298,6 @@ test_that("Carbon correction (Excel, El-MAVEN export (with set names))", {
     output_base = FALSE,
     resolution = resolution, resolution_defined_at = resolution_defined_at)
 
-  read_expected <- function(file, sheet) {
-    expected <- readxl::read_excel(path = file, sheet = sheet)
-    expected <- dplyr::mutate_at(expected,
-                                 dplyr::vars(dplyr::ends_with("_Label")),
-                                 as.integer)
-  }
   expected_output <- list(
     "Original" = read_expected(
       system.file("extdata", "elmaven_export_corrected.xlsx", package = "accucor"),
@@ -381,7 +313,7 @@ test_that("Carbon correction (Excel, El-MAVEN export (with set names))", {
       sheet = "PoolAfterDF")
   )
 
-  check_output(corrected, expected_output)
+  expect_equal(corrected, expected_output)
 })
 
 
@@ -395,12 +327,6 @@ test_that("Carbon correction (csv, El-MAVEN export (w/o names))", {
     resolution = resolution,
     output_base = FALSE)
 
-  read_expected <- function(file, sheet) {
-    expected <- readxl::read_excel(path = file, sheet = sheet)
-    expected <- dplyr::mutate_at(expected,
-                                 dplyr::vars(dplyr::ends_with("_Label")),
-                                 as.integer)
-  }
   expected_output <- list(
     "Original" = read_expected(
       system.file("extdata", "elmaven_d2_export_corrected.xlsx", package = "accucor"),
@@ -416,7 +342,7 @@ test_that("Carbon correction (csv, El-MAVEN export (w/o names))", {
       sheet = "PoolAfterDF")
   )
 
-  check_output(corrected, expected_output)
+  expect_equal(corrected, expected_output)
 })
 
 
@@ -430,12 +356,6 @@ test_that("Carbon correction (csv, El-MAVEN export, multiple groups per compound
     resolution = resolution,
     output_base = FALSE)
 
-  read_expected <- function(file, sheet) {
-    expected <- readxl::read_excel(path = file, sheet = sheet)
-    expected <- dplyr::mutate_at(expected,
-                                 dplyr::vars(dplyr::ends_with("_Label")),
-                                 as.integer)
-  }
   expected_output <- list(
     "Original" = read_expected(
       system.file("extdata", "alanine_three_peak_groups_corrected.xlsx", package = "accucor"),
@@ -451,5 +371,36 @@ test_that("Carbon correction (csv, El-MAVEN export, multiple groups per compound
       sheet = "PoolAfterDF")
   )
 
-  check_output(corrected, expected_output)
+  expect_equal(corrected, expected_output)
 })
+
+# Test using dataframe input/output
+test_that("Carbon correction (dataframe)", {
+  resolution <- 100000
+  input_data <- as.data.frame(
+    readxl::read_excel(
+      path = system.file("extdata", "C_Sample_Input_Simple.xlsx", package = "accucor"),
+      sheet = 1)
+  )
+
+  corrected <- natural_abundance_correction(
+    data = input_data,
+    resolution = resolution)
+
+  expected_output <- list(
+    "Original" = read_expected(
+      system.file("extdata", "C_Sample_Input_Simple.xlsx", package = "accucor"),
+      sheet = 1),
+    "Corrected" = read_expected(
+      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
+      sheet = "Corrected"),
+    "Normalized" = read_expected(
+      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
+      sheet = "Normalized"),
+    "PoolAfterDF" = read_expected(
+      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
+      sheet = "PoolAfterDF")
+  )
+  expect_equal(corrected, expected_output)
+})
+
