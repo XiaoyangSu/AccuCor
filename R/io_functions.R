@@ -35,7 +35,7 @@ read_elmaven <-
     # TODO Break this out to a function
     # Classic MAVEN style import
     if (!is.null(compound_database)) {
-      compounds <- readr::read_csv(compound_database)
+      compounds <- suppressMessages(readr::read_csv(compound_database))
       names(compounds)[which(tolower(names(compounds)) == 'compound')] <-
         "Compound"
       names(compounds)[which(tolower(names(compounds)) == 'formula')] <-
@@ -43,11 +43,13 @@ read_elmaven <-
 
       if (filetype %in% c("xls", "xlsx")) {
         InputDF <-
-          readxl::read_excel(path, sheet = sheet, col_names = FALSE, ...)
+          suppressMessages(readxl::read_excel(path, sheet = sheet, col_names = FALSE, ...))
       } else if (filetype %in% c("csv", "txt")) {
-        InputDF <- readr::read_csv(path, col_names = FALSE, ...)
+        InputDF <-
+          suppressMessages(readr::read_csv(path, col_names = FALSE, ...))
       } else if (filetype %in% c("tsv")) {
-        InputDF <- readr::read_tsv(path, col_names = FALSE, ...)
+        InputDF <-
+          suppressMessages(readr::read_tsv(path, col_names = FALSE, ...))
       } else {
         stop(paste("Unsupported input filetype: '", filetype, "'", sep = ""))
       }
@@ -99,11 +101,11 @@ read_elmaven <-
       # El-Maven style import
     } else {
       if (filetype %in% c("xls", "xlsx")) {
-        InputDF <- readxl::read_excel(path, sheet = sheet, ...)
+        InputDF <- suppressMessages(readxl::read_excel(path, sheet = sheet, ...))
       } else if (filetype %in% c("csv", "txt")) {
-        InputDF <- readr::read_csv(path, ...)
+        InputDF <- suppressMessages(readr::read_csv(path, ...))
       } else if (filetype %in% c("tsv")) {
-        InputDF <- readr::read_tsv(path, ...)
+        InputDF <- suppressMessages(readr::read_tsv(path, ...))
       } else {
         stop(paste("Unsupported input filetype: '", filetype, "'", sep = ""))
       }
@@ -180,8 +182,12 @@ clean_data_frame <- function(df, columns_to_skip = NULL) {
     tmp <- dplyr::group_by(df, !!as.name(compound_col_name))
     metaGroupId <- dplyr::group_indices(tmp)
     # Check to be sure there is only one peak group per compound
-    tmp <- dplyr::summarise(tmp, peak_group_count =
-                              sum(grepl("PARENT", !!as.name(isotope_label_col_name))))
+    tmp <- dplyr::summarise(tmp,
+                            peak_group_count =
+                              sum(grepl(
+                                "PARENT",!!as.name(isotope_label_col_name)
+                              )),
+                            .groups = "keep")
     tmp <- dplyr::filter(tmp, .data$peak_group_count > 1)
     tmp <- dplyr::pull(tmp, !!as.name(compound_col_name))
     if (! rlang::is_empty(tmp)) {
@@ -197,11 +203,11 @@ clean_data_frame <- function(df, columns_to_skip = NULL) {
   cleaned_dataframe <- dplyr::bind_cols(
     metaGroupId = as.factor(metaGroupId),
     dplyr::select(df,
-                  compound = compound_col_num,
-                  formula = formula_col_num,
-                  isotope_label = isotope_label_col_num),
+                  compound = dplyr::all_of(compound_col_num),
+                  formula = dplyr::all_of(formula_col_num),
+                  isotope_label = dplyr::all_of(isotope_label_col_num)),
     label_index = label_counts$label_counts,
-    dplyr::select(df, sample_col_names))
+    dplyr::select(df, dplyr::all_of(sample_col_names)))
 
   return(cleaned_dataframe)
 }

@@ -402,7 +402,7 @@ natural_abundance_correction <- function(data,
     }
   }
 
-  if (missing(data) || data == "") {
+  if (missing(data)) {
     stop("Must specify 'data' (data frame or path to input file)")
   }
 
@@ -527,15 +527,19 @@ natural_abundance_correction <- function(data,
   }
 
   compound_label_tbl <- dplyr::tibble(OutputCompound, OutputLabel)
+  colnames(OutputMatrix) <- sample_col_names
   OutputDF <- dplyr::bind_cols(compound_label_tbl,
                                dplyr::as_tibble(OutputMatrix,
                                                 .name_repair = "minimal"))
+  colnames(OutputPercentageMatrix) <- sample_col_names
   OutputPercentageDF <- dplyr::bind_cols(compound_label_tbl,
                                          dplyr::as_tibble(OutputPercentageMatrix,
                                                           .name_repair = "minimal"))
+  colnames(OutputPoolBefore) <- sample_col_names
   OutputPoolBeforeDF <- dplyr::bind_cols(dplyr::tibble(OutputPoolCompound),
                                          dplyr::as_tibble(OutputPoolBefore,
                                                           .name_repair = "minimal"))
+  colnames(OutputPoolAfter) <- sample_col_names
   OutputPoolAfterDF <- dplyr::bind_cols(dplyr::tibble(OutputPoolCompound),
                                         dplyr::as_tibble(OutputPoolAfter,
                                                          .name_repair = "minimal"))

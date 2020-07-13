@@ -23,5 +23,5 @@ Imports:
     rlang,
     tibble,
     writexl
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.1
 Suggests: testthat

@@ -4,8 +4,15 @@
 \alias{carbon_isotope_correction}
 \title{Natural Abundance carbon isotope correction for one metabolite}
 \usage{
-carbon_isotope_correction(formula, datamatrix, label, Resolution, ResDefAt,
-  purity = 0.99, ReportPoolSize = TRUE)
+carbon_isotope_correction(
+  formula,
+  datamatrix,
+  label,
+  Resolution,
+  ResDefAt,
+  purity = 0.99,
+  ReportPoolSize = TRUE
+)
 }
 \arguments{
 \item{formula}{String representing molecular formula}

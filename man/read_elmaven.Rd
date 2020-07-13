@@ -4,14 +4,21 @@
 \alias{read_elmaven}
 \title{Natural Abundance correction for Carbon labeled samples}
 \usage{
-read_elmaven(path, sheet = NULL, compound_database = NULL,
-  columns_to_skip = NULL, filetype = NULL, ...)
+read_elmaven(
+  path,
+  sheet = NULL,
+  compound_database = NULL,
+  columns_to_skip = NULL,
+  filetype = NULL,
+  ...
+)
 }
 \arguments{
 \item{path}{Path to input file.}
 
 \item{sheet}{Name of sheet in xlsx file with columns 'compound',
-'formula', 'isotopelabel', and one column per sample.}
+'formula', 'isotopelabel', and one column per sample. Defaults to the
+first sheet.}
 
 \item{compound_database}{Path to compound database in csv format. Only used
 for classic MAVEN style input when formula is not specified.}
@@ -25,9 +32,10 @@ sample names.}
 \item{\dots}{Pass additional parameters to readxl::read_excel}
 }
 \value{
-List with two dataframes, "original" which is result of read_excel
-      and "cleaned", which is a dataframe with columns 'compound', 'formula',
-      'isotope_label', label_index', followed by columns for each sample.
+List containing three items: "original" data.frame which is result
+      of read_excel, "cleaned" data.frame which with columns 'compound',
+      'formula', isotope_label', label_index', followed by columns for each
+      sample, and "isotope" which is a character indicating the isotope
 }
 \description{
 Natural Abundance correction for Carbon labeled samples
