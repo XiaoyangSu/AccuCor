@@ -63,7 +63,7 @@ carbon_isotope_correction <- function(formula, datamatrix, label, Resolution,
                                       Br81=c(0:AtomNumber["Br"]))
   
   Isotope.Combinations <- Isotope.Combinations %>% mutate(MassSum=H2+N15+O17+O18*2+S33+S34*2+Si29+Si30*2+Cl37*2+Br81*2) %>%
-    filter((O17+O18)<=c(0:AtomNumber["O"]) & (S33+S34)<=c(0:AtomNumber["S"]) & (Si29+Si30)<=c(0:AtomNumber["Si"]) & MassSum<=AtomNumber["C"]) %>% 
+    filter((O17+O18)<=AtomNumber["O"] & (S33+S34)<=AtomNumber["S"] & (Si29+Si30)<=AtomNumber["Si"] & MassSum<=AtomNumber["C"]) %>% 
     mutate(MassDiff=(2.0141-1.00783)*H2+(15.00011-14.00307)*N15+(16.99913-15.99491)*O17+(17.99916-15.99491)*O18
            +(32.97146-31.97207)*S33+(33.96787-31.97207)*S34+(28.97649-27.97693)*Si29+(29.97377-27.97693)*Si30
            +(36.96590-34.96885)*Cl37+(80.91629-78.91833)*Br81
@@ -158,7 +158,7 @@ deuterium_isotope_correction <- function(formula, datamatrix, label, Resolution,
                                       Br81=c(0:AtomNumber["Br"]))
   
   Isotope.Combinations <- Isotope.Combinations %>% mutate(MassSum=C13+N15+O17+O18*2+S33+S34*2+Si29+Si30*2+Cl37*2+Br81*2) %>%
-    filter((O17+O18)<=c(0:AtomNumber["O"]) & (S33+S34)<=c(0:AtomNumber["S"]) & (Si29+Si30)<=c(0:AtomNumber["Si"]) & MassSum<=AtomNumber["H"]) %>% 
+    filter((O17+O18)<=AtomNumber["O"] & (S33+S34)<=AtomNumber["S"] & (Si29+Si30)<=AtomNumber["Si"] & MassSum<=AtomNumber["H"]) %>% 
     mutate(MassDiff=(13.00335-12)*C13+(15.00011-14.00307)*N15+(16.99913-15.99491)*O17+(17.99916-15.99491)*O18
            +(32.97146-31.97207)*S33+(33.96787-31.97207)*S34+(28.97649-27.97693)*Si29+(29.97377-27.97693)*Si30
            +(36.96590-34.96885)*Cl37+(80.91629-78.91833)*Br81
@@ -252,7 +252,7 @@ nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution,
                                       Br81=c(0:AtomNumber["Br"]))
   
   Isotope.Combinations <- Isotope.Combinations %>% mutate(MassSum=C13+H2+O17+O18*2+S33+S34*2+Si29+Si30*2+Cl37*2+Br81*2) %>%
-    filter((O17+O18)<=c(0:AtomNumber["O"]) & (S33+S34)<=c(0:AtomNumber["S"]) & (Si29+Si30)<=c(0:AtomNumber["Si"]) & MassSum<=AtomNumber["N"]) %>% 
+    filter((O17+O18)<=AtomNumber["O"] & (S33+S34)<=AtomNumber["S"] & (Si29+Si30)<=AtomNumber["Si"] & MassSum<=AtomNumber["N"]) %>% 
     mutate(MassDiff=(13.00335-12)*C13+(2.0141-1.00783)*H2+(16.99913-15.99491)*O17+(17.99916-15.99491)*O18
            +(32.97146-31.97207)*S33+(33.96787-31.97207)*S34+(28.97649-27.97693)*Si29+(29.97377-27.97693)*Si30
            +(36.96590-34.96885)*Cl37+(80.91629-78.91833)*Br81
