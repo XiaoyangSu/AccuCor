@@ -4,16 +4,28 @@
 \alias{natural_abundance_correction}
 \title{Natural Abundance correction for mass spectrometry data}
 \usage{
-natural_abundance_correction(path, sheet = NULL, compound_database = NULL,
-  output_base = NULL, output_filetype = "xlsx", columns_to_skip = NULL,
-  resolution, resolution_defined_at = 200, purity = NULL,
-  report_pool_size_before_df = FALSE)
+natural_abundance_correction(
+  data,
+  sheet = NULL,
+  compound_database = NULL,
+  output_base = NULL,
+  output_filetype = "xlsx",
+  columns_to_skip = NULL,
+  resolution,
+  resolution_defined_at = 200,
+  purity = NULL,
+  report_pool_size_before_df = FALSE,
+  path = NULL
+)
 }
 \arguments{
-\item{path}{Path to xlsx file.}
+\item{data}{Path to input data file (xslx, xls, csv, txt, or tsv) OR
+dataframe. If dataframe is specified, specify output_base to output files
+automatically written.}
 
 \item{sheet}{Name of sheet in xlsx file with columns 'compound',
-'formula', 'isotopelabel', and one column per sample.}
+'formula', 'isotopelabel', and one column per sample. Defaults to the
+first sheet.}
 
 \item{compound_database}{Path to compound database in csv format. Only used
 for classic MAVEN style input when formula is not specified.}
@@ -38,6 +50,8 @@ sample names.}
 Nitrogen 0.99}
 
 \item{report_pool_size_before_df}{Report PoolSizeBeforeDF, default = FALSE}
+
+\item{path}{Deprecated. Specify path to input data file (alias for `data`).}
 }
 \value{
 Named list of matrices: 'Corrected', 'Normalized',

@@ -4,8 +4,15 @@
 \alias{deuterium_isotope_correction}
 \title{Natural Abundance deuterium isotope correction for one metabolite}
 \usage{
-deuterium_isotope_correction(formula, datamatrix, label, Resolution, ResDefAt,
-  purity = 0.99, ReportPoolSize = TRUE)
+deuterium_isotope_correction(
+  formula,
+  datamatrix,
+  label,
+  Resolution,
+  ResDefAt,
+  purity = 0.99,
+  ReportPoolSize = TRUE
+)
 }
 \arguments{
 \item{formula}{String representing molecular formula}
