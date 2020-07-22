@@ -13,7 +13,8 @@ tab-separated test (`.tsv`) files.
 ## Installation
 ```R
 install.packages("devtools")
-devtools::install_github("lparsons/accucor")
+library(devtools)
+devtools::install_github("XiaoyangSu/AccuCor")
 ```
 
 ## Quickstart
@@ -22,6 +23,7 @@ devtools::install_github("lparsons/accucor")
 library(accucor)
 
 # Input file (example file included)
+# Or use your own: carbon_input_file <- "/path/to/my/datafile.csv"
 
 carbon_input_file <- system.file("extdata", "C_Sample_Input_Simple.csv", package = "accucor")
 

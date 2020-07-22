@@ -1,6 +1,21 @@
 context("Natural abundance correction")
 library(accucor)
 
+check_output <- function(corrected, expected, check.attributes=TRUE) {
+  expect_equal(corrected$Original,
+               expected$Original,
+               check.attributes=check.attributes)
+  expect_equal(corrected$Corrected,
+               expected$Corrected,
+               check.attributes=check.attributes)
+  expect_equal(corrected$Normalized,
+               expected$Normalized,
+               check.attributes=check.attributes)
+  expect_equal(corrected$PoolAfterDF,
+               expected$PoolAfterDF,
+               check.attributes=check.attributes)
+}
+
 test_that("Carbon correction (Excel, simple format)", {
   resolution <- 100000
   input_file <- system.file("extdata", "C_Sample_Input_Simple.xlsx",
@@ -32,15 +47,7 @@ test_that("Carbon correction (Excel, simple format)", {
       sheet = "PoolAfterDF")
   )
 
-  # Must convert to dataframe due to https://github.com/tidyverse/dplyr/issues/2751
-  expect_equal(as.data.frame(corrected$Original),
-               as.data.frame(expected_output$Original))
-  expect_equal(as.data.frame(corrected$Corrected),
-               as.data.frame(expected_output$Corrected))
-  expect_equal(as.data.frame(corrected$Normalized),
-               as.data.frame(expected_output$Normalized))
-  expect_equal(as.data.frame(corrected$PoolAfterDF),
-               as.data.frame(expected_output$PoolAfterDF))
+  check_output(corrected, expected_output)
 })
 
 
@@ -79,17 +86,7 @@ test_that("PoolBeforeDF parameter", {
       sheet = "PoolBeforeDF")
   )
 
-  # Must convert to dataframe due to https://github.com/tidyverse/dplyr/issues/2751
-  expect_equal(as.data.frame(corrected$Original),
-               as.data.frame(expected_output$Original))
-  expect_equal(as.data.frame(corrected$Corrected),
-               as.data.frame(expected_output$Corrected))
-  expect_equal(as.data.frame(corrected$Normalized),
-               as.data.frame(expected_output$Normalized))
-  expect_equal(as.data.frame(corrected$PoolAfterDF),
-               as.data.frame(expected_output$PoolAfterDF))
-  expect_equal(as.data.frame(corrected$PoolBeforeDF),
-               as.data.frame(expected_output$PoolBeforeDF))
+  check_output(corrected, expected_output)
 })
 
 test_that("Carbon correction (csv, simple format)", {
@@ -124,15 +121,7 @@ test_that("Carbon correction (csv, simple format)", {
       sheet = "PoolAfterDF")
   )
 
-  # Must convert to dataframe due to https://github.com/tidyverse/dplyr/issues/2751
-  expect_equal(as.data.frame(corrected$Original),
-               as.data.frame(expected_output$Original))
-  expect_equal(as.data.frame(corrected$Corrected),
-               as.data.frame(expected_output$Corrected))
-  expect_equal(as.data.frame(corrected$Normalized),
-               as.data.frame(expected_output$Normalized))
-  expect_equal(as.data.frame(corrected$PoolAfterDF),
-               as.data.frame(expected_output$PoolAfterDF))
+  check_output(corrected, expected_output)
 })
 
 
@@ -169,15 +158,7 @@ test_that("Carbon correction (Excel, Classic MAVEN copy/paste)", {
       sheet = "PoolAfterDF")
   )
 
-  # Must convert to dataframe due to https://github.com/tidyverse/dplyr/issues/2751
-  expect_equal(as.data.frame(corrected$Original),
-               as.data.frame(expected_output$Original))
-  expect_equal(as.data.frame(corrected$Corrected),
-               as.data.frame(expected_output$Corrected))
-  expect_equal(as.data.frame(corrected$Normalized),
-               as.data.frame(expected_output$Normalized))
-  expect_equal(as.data.frame(corrected$PoolAfterDF),
-               as.data.frame(expected_output$PoolAfterDF))
+  check_output(corrected, expected_output)
 })
 
 
@@ -213,15 +194,7 @@ test_that("Deuterium correction (Excel, simple format)", {
       sheet = "PoolAfterDF")
   )
 
-  # Must convert to dataframe due to https://github.com/tidyverse/dplyr/issues/2751
-  expect_equal(as.data.frame(corrected$Original),
-               as.data.frame(expected_output$Original))
-  expect_equal(as.data.frame(corrected$Corrected),
-               as.data.frame(expected_output$Corrected))
-  expect_equal(as.data.frame(corrected$Normalized),
-               as.data.frame(expected_output$Normalized))
-  expect_equal(as.data.frame(corrected$PoolAfterDF),
-               as.data.frame(expected_output$PoolAfterDF))
+  check_output(corrected, expected_output)
 })
 
 
@@ -259,15 +232,7 @@ test_that("Deuterium correction (Excel, Classic Maven Cut/Paste)", {
       sheet = "PoolAfterDF")
   )
 
-  # Must convert to dataframe due to https://github.com/tidyverse/dplyr/issues/2751
-  expect_equal(as.data.frame(corrected$Original),
-               as.data.frame(expected_output$Original))
-  expect_equal(as.data.frame(corrected$Corrected),
-               as.data.frame(expected_output$Corrected))
-  expect_equal(as.data.frame(corrected$Normalized),
-               as.data.frame(expected_output$Normalized))
-  expect_equal(as.data.frame(corrected$PoolAfterDF),
-               as.data.frame(expected_output$PoolAfterDF))
+  check_output(corrected, expected_output)
 })
 
 
@@ -303,15 +268,7 @@ test_that("Nitrogen correction (Excel, simple format)", {
       sheet = "PoolAfterDF")
   )
 
-  # Must convert to dataframe due to https://github.com/tidyverse/dplyr/issues/2751
-  expect_equal(as.data.frame(corrected$Original),
-               as.data.frame(expected_output$Original))
-  expect_equal(as.data.frame(corrected$Corrected),
-               as.data.frame(expected_output$Corrected))
-  expect_equal(as.data.frame(corrected$Normalized),
-               as.data.frame(expected_output$Normalized))
-  expect_equal(as.data.frame(corrected$PoolAfterDF),
-               as.data.frame(expected_output$PoolAfterDF))
+  check_output(corrected, expected_output)
 })
 
 
@@ -349,15 +306,7 @@ test_that("Nitrogen correction (Excel, Classic Maven Cut/Paste)", {
       sheet = "PoolAfterDF")
   )
 
-  # Must convert to dataframe due to https://github.com/tidyverse/dplyr/issues/2751
-  expect_equal(as.data.frame(corrected$Original),
-               as.data.frame(expected_output$Original))
-  expect_equal(as.data.frame(corrected$Corrected),
-               as.data.frame(expected_output$Corrected))
-  expect_equal(as.data.frame(corrected$Normalized),
-               as.data.frame(expected_output$Normalized))
-  expect_equal(as.data.frame(corrected$PoolAfterDF),
-               as.data.frame(expected_output$PoolAfterDF))
+  check_output(corrected, expected_output)
 })
 
 
@@ -396,18 +345,7 @@ test_that("Carbon correction (csv, El-MAVEN export (with set names))", {
       sheet = "PoolAfterDF")
   )
 
-  # Must convert to dataframe due to https://github.com/tidyverse/dplyr/issues/2751
-  # Blank label column parses as different type
-  expected_output$Original$label <-
-    sapply(expected_output$Original$label, as.character)
-  expect_equal(as.data.frame(corrected$Original),
-               as.data.frame(expected_output$Original))
-  expect_equal(as.data.frame(corrected$Corrected),
-               as.data.frame(expected_output$Corrected))
-  expect_equal(as.data.frame(corrected$Normalized),
-               as.data.frame(expected_output$Normalized))
-  expect_equal(as.data.frame(corrected$PoolAfterDF),
-               as.data.frame(expected_output$PoolAfterDF))
+  check_output(corrected, expected_output, check.attributes = FALSE)
 })
 
 
@@ -443,15 +381,7 @@ test_that("Carbon correction (Excel, El-MAVEN export (with set names))", {
       sheet = "PoolAfterDF")
   )
 
-  # Must convert to dataframe due to https://github.com/tidyverse/dplyr/issues/2751
-  expect_equal(as.data.frame(corrected$Original),
-               as.data.frame(expected_output$Original))
-  expect_equal(as.data.frame(corrected$Corrected),
-               as.data.frame(expected_output$Corrected))
-  expect_equal(as.data.frame(corrected$Normalized),
-               as.data.frame(expected_output$Normalized))
-  expect_equal(as.data.frame(corrected$PoolAfterDF),
-               as.data.frame(expected_output$PoolAfterDF))
+  check_output(corrected, expected_output)
 })
 
 
@@ -486,18 +416,7 @@ test_that("Carbon correction (csv, El-MAVEN export (w/o names))", {
       sheet = "PoolAfterDF")
   )
 
-  # Must convert to dataframe due to https://github.com/tidyverse/dplyr/issues/2751
-  # Label column parses as different type
-  expected_output$Original$label <-
-    sapply(expected_output$Original$label, as.character)
-  expect_equal(as.data.frame(corrected$Original),
-               as.data.frame(expected_output$Original))
-  expect_equal(as.data.frame(corrected$Corrected),
-               as.data.frame(expected_output$Corrected))
-  expect_equal(as.data.frame(corrected$Normalized),
-               as.data.frame(expected_output$Normalized))
-  expect_equal(as.data.frame(corrected$PoolAfterDF),
-               as.data.frame(expected_output$PoolAfterDF))
+  check_output(corrected, expected_output)
 })
 
 
@@ -532,16 +451,5 @@ test_that("Carbon correction (csv, El-MAVEN export, multiple groups per compound
       sheet = "PoolAfterDF")
   )
 
-  # Must convert to dataframe due to https://github.com/tidyverse/dplyr/issues/2751
-  # Label column parses as different type
-  expected_output$Original$label <-
-    sapply(expected_output$Original$label, as.character)
-  expect_equal(as.data.frame(corrected$Original),
-               as.data.frame(expected_output$Original))
-  expect_equal(as.data.frame(corrected$Corrected),
-               as.data.frame(expected_output$Corrected))
-  expect_equal(as.data.frame(corrected$Normalized),
-               as.data.frame(expected_output$Normalized))
-  expect_equal(as.data.frame(corrected$PoolAfterDF),
-               as.data.frame(expected_output$PoolAfterDF))
+  check_output(corrected, expected_output)
 })

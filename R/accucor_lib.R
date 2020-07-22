@@ -494,13 +494,17 @@ natural_abundance_correction <- function(path,
 
   compound_label_tbl <- dplyr::tibble(OutputCompound, OutputLabel)
   OutputDF <- dplyr::bind_cols(compound_label_tbl,
-                               dplyr::as_tibble(OutputMatrix))
+                               dplyr::as_tibble(OutputMatrix,
+                                                .name_repair = "minimal"))
   OutputPercentageDF <- dplyr::bind_cols(compound_label_tbl,
-                                         dplyr::as_tibble(OutputPercentageMatrix))
+                                         dplyr::as_tibble(OutputPercentageMatrix,
+                                                          .name_repair = "minimal"))
   OutputPoolBeforeDF <- dplyr::bind_cols(dplyr::tibble(OutputPoolCompound),
-                                         dplyr::as_tibble(OutputPoolBefore))
+                                         dplyr::as_tibble(OutputPoolBefore,
+                                                          .name_repair = "minimal"))
   OutputPoolAfterDF <- dplyr::bind_cols(dplyr::tibble(OutputPoolCompound),
-                                        dplyr::as_tibble(OutputPoolAfter))
+                                        dplyr::as_tibble(OutputPoolAfter,
+                                                         .name_repair = "minimal"))
   names(OutputDF) <- c("Compound",
                        paste(input_data$isotope,"Label", sep="_"),
                        sample_col_names)

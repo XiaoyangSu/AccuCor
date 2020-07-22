@@ -71,8 +71,8 @@ read_elmaven <- function(path, sheet = NULL, compound_database = NULL,
                                   .data$Formula, .data$IsotopeLabel)
     tmpInputDF_2 <- dplyr::select(tmpInputDF, -.data$Compound,
                                    -.data$Formula, -.data$IsotopeLabel)
-    tmpInputDF_2 <- dplyr::mutate_all(tmpInputDF_2,
-                                      dplyr::funs(as.numeric(.data$.)))
+    tmpInputDF_2 <- dplyr::mutate_if(tmpInputDF_2, is.character, as.numeric)
+
     InputDF <- dplyr::bind_cols(tmpInputDF_1, tmpInputDF_2)
 
     # TODO Convert sample data to numeric
@@ -142,13 +142,13 @@ read_elmaven <- function(path, sheet = NULL, compound_database = NULL,
     metaGroupId <- InputDF$metaGroupId
   } else {
     # Generate metaGroupId
-    tmp <- dplyr::group_by(InputDF, rlang::UQ(as.name(compound_col_name)))
+    tmp <- dplyr::group_by(InputDF, !!as.name(compound_col_name))
     metaGroupId <- dplyr::group_indices(tmp)
     # Check to be sure there is only one peak group per compound
     tmp <- dplyr::summarise(tmp, peak_group_count =
-                              sum(grepl("PARENT", rlang::UQ(as.name(isotope_label_col_name)))))
+                              sum(grepl("PARENT", !!as.name(isotope_label_col_name))))
     tmp <- dplyr::filter(tmp, .data$peak_group_count > 1)
-    tmp <- dplyr::pull(tmp, rlang::UQ(as.name(compound_col_name)))
+    tmp <- dplyr::pull(tmp, !!as.name(compound_col_name))
     if (! rlang::is_empty(tmp)) {
       stop(sprintf("Multiple peak groups detected for '%s', use metaGroupId column to distinguish peak groups (El-Maven >= 0.4)", tmp))
     }
