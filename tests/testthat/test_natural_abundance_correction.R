@@ -139,7 +139,8 @@ test_that("Deuterium correction (Excel, simple format)", {
   corrected <- natural_abundance_correction(
     path = input_file,
     output_base = FALSE,
-    resolution = resolution, resolution_defined_at = resolution_defined_at)
+    resolution = resolution,
+    resolution_defined_at = resolution_defined_at)
 
   expected_output <- list(
     "Original" = read_expected(

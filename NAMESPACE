@@ -2,4 +2,5 @@
 
 export(natural_abundance_correction)
 export(read_elmaven)
+importFrom(dplyr,"%>%")
 importFrom(rlang,.data)

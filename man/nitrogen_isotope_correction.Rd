@@ -9,7 +9,7 @@ nitrogen_isotope_correction(
   datamatrix,
   label,
   Resolution,
-  ResDefAt,
+  ResDefAt = 200,
   purity = 0.99,
   ReportPoolSize = TRUE
 )
