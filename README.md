@@ -1,4 +1,5 @@
 # AccuCor - Isotope Natural Abundance Correction
+# Yujue is participating.
 
 [![Travis build status](https://travis-ci.org/lparsons/accucor.svg?branch=master)](https://travis-ci.org/lparsons/accucor)
 
