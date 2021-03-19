@@ -1,6 +1,6 @@
 # AccuCor - Isotope Natural Abundance Correction
 
-[![Travis build status](https://travis-ci.org/lparsons/accucor.svg?branch=master)](https://travis-ci.org/lparsons/accucor)
+[![R-CMD-check](https://github.com/XiaoyangSu/AccuCor/actions/workflows/r_standard_check.yml/badge.svg)](https://github.com/XiaoyangSu/AccuCor/actions/workflows/r_standard_check.yml)
 
 AccuCor is an isotope natural abundance correction algorithm that is needed
 especially for high resolution mass spectrometers. AccuCor supports 13C, 2H and
