@@ -116,6 +116,8 @@ to turn off isotope detection for other isotopes (see
 If you use this software in your research, please cite the following paper
 (also see `citation("accucor")`):
 
+[![R-CMD-check](https://github.com/XiaoyangSu/AccuCor/actions/workflows/r_standard_check.yml/badge.svg)](https://github.com/XiaoyangSu/AccuCor/actions/workflows/r_standard_check.yml)
+
 Su X, Lu W and Rabinowitz J (2017). "Metabolite Spectral Accuracy on Orbitraps." *Analytical Chemistry*, *89*(11), pp. 5940-5948. doi:
 10.1021/acs.analchem.7b00396 (URL: [http://doi.org/10.1021/acs.analchem.7b0039](http://doi.org/10.1021/acs.analchem.7b0039)),
 PMID: 28471646, R package version 0.2.3 (2018).
