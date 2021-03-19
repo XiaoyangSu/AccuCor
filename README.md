@@ -1,6 +1,6 @@
 # AccuCor - Isotope Natural Abundance Correction
 
-[![Travis build status](https://travis-ci.org/lparsons/accucor.svg?branch=master)](https://travis-ci.org/lparsons/accucor)
+[![R-CMD-check](https://github.com/XiaoyangSu/AccuCor/actions/workflows/r_standard_check.yml/badge.svg)](https://github.com/XiaoyangSu/AccuCor/actions/workflows/r_standard_check.yml)
 
 AccuCor is an isotope natural abundance correction algorithm that is needed
 especially for high resolution mass spectrometers. AccuCor supports 13C, 2H and
@@ -115,8 +115,6 @@ to turn off isotope detection for other isotopes (see
 ### Citation
 If you use this software in your research, please cite the following paper
 (also see `citation("accucor")`):
-
-[![R-CMD-check](https://github.com/XiaoyangSu/AccuCor/actions/workflows/r_standard_check.yml/badge.svg)](https://github.com/XiaoyangSu/AccuCor/actions/workflows/r_standard_check.yml)
 
 Su X, Lu W and Rabinowitz J (2017). "Metabolite Spectral Accuracy on Orbitraps." *Analytical Chemistry*, *89*(11), pp. 5940-5948. doi:
 10.1021/acs.analchem.7b00396 (URL: [http://doi.org/10.1021/acs.analchem.7b0039](http://doi.org/10.1021/acs.analchem.7b0039)),
