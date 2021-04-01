@@ -16,7 +16,8 @@ Authors@R: c(
     person(given = "Yujue",
            family = "Wang",
            email = "yw429@rwjms.rutgers.edu",
-           role = "ctb"),
+           role = "ctb",
+           comment = c(ORCID = "0000-0001-7088-1729")),
     person(given = "Princeton University",
            role = "cph"))
 Description: An isotope natural abundance correction algorithm that
