@@ -19,7 +19,7 @@ natural_abundance_correction(
 )
 }
 \arguments{
-\item{data}{Path to input data file (xslx, xls, csv, txt, or tsv) OR
+\item{data}{Path to input data file (xlsx, xls, csv, txt, or tsv) OR
 dataframe. If dataframe is specified, specify output_base to output files
 automatically written.}
 

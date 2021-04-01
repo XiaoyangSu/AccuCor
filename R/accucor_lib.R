@@ -1,7 +1,7 @@
 #' Natural Abundance carbon isotope correction for one metabolite
 #'
 #' @param formula String representing molecular formula
-#' @param datamatrix Matrix of abundnaces for each sample for each isotope
+#' @param datamatrix Matrix of abundances for each sample for each isotope
 #' @param label vector of integer labels
 #' @param Resolution For Exactive, the Resolution is 100000, defined at Mw 200
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
@@ -118,7 +118,7 @@ carbon_isotope_correction <- function(formula, datamatrix, label, Resolution,
 #' Natural Abundance deuterium isotope correction for one metabolite
 #'
 #' @param formula String representing molecular formula
-#' @param datamatrix Matrix of abundnaces for each sample for each isotope
+#' @param datamatrix Matrix of abundances for each sample for each isotope
 #' @param label vector of integer labels
 #' @param Resolution For Exactive, the Resolution is 100000, defined at Mw 200
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
@@ -127,7 +127,7 @@ carbon_isotope_correction <- function(formula, datamatrix, label, Resolution,
 #' @importFrom rlang .data
 #' @return Named list of matrices: 'Corrected', 'Normalized',
 #'      'PoolBeforeDF', and 'PoolAfterDF'.
-deuterium_isotope_correction <- function(formula, datamatrix, label, Resolution, 
+deuterium_isotope_correction <- function(formula, datamatrix, label, Resolution,
                                          ResDefAt=200, purity=0.99, ReportPoolSize=TRUE) {
 
   CarbonNaturalAbundace <- c(0.9893, 0.0107)
@@ -163,7 +163,7 @@ deuterium_isotope_correction <- function(formula, datamatrix, label, Resolution,
     )
   }
   else{
-    
+
     for (i in 1:length(label)) {
       ExpMatrix[label[i] + 1, ] <- datamatrix[i, ]
     }
@@ -237,7 +237,7 @@ deuterium_isotope_correction <- function(formula, datamatrix, label, Resolution,
 #' Natural Abundance deuterium isotope correction for one metabolite
 #'
 #' @param formula String representing molecular formula
-#' @param datamatrix Matrix of abundnaces for each sample for each isotope
+#' @param datamatrix Matrix of abundances for each sample for each isotope
 #' @param label vector of integer labels
 #' @param Resolution For Exactive, the Resolution is 100000, defined at Mw 200
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
@@ -366,7 +366,7 @@ nitrogen_isotope_correction <- function(formula, datamatrix, label, Resolution,
 #' \code{C13-label-#}. \code{D-label-#}. or \code{N15-label-#}. Parent
 #' (unlabeled) compounds are specified by \code{C12 PARENT}.
 #'
-#' @param data Path to input data file (xslx, xls, csv, txt, or tsv) OR
+#' @param data Path to input data file (xlsx, xls, csv, txt, or tsv) OR
 #'   dataframe. If dataframe is specified, specify output_base to output files
 #'   automatically written.
 #' @param sheet Name of sheet in xlsx file with columns 'compound',

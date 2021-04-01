@@ -4,7 +4,7 @@
 
 AccuCor is an isotope natural abundance correction algorithm that is needed
 especially for high resolution mass spectrometers. AccuCor supports 13C, 2H and
-15N isotope corretion.
+15N isotope correction.
 
 AccuCor accepts Excel (`.xls` and `.xlsx`), comma-separated text (`.csv`), or
 tab-separated test (`.tsv`) files.
@@ -88,7 +88,7 @@ included the exported data from El-MAVEN.
 
 *   Data input file - one block per compound. The first row of a block is the
     compound name followed by sample names. The remaining rows in the block
-    contain the isotople label (*e.g.* `C12 PARENT`, `C13-label-1`) in the first
+    contain the isotope label (*e.g.* `C12 PARENT`, `C13-label-1`) in the first
     column followed by intensities for each sample.
 
 *   Compound database file - A comma separated (`.csv`) file with columns for the
@@ -105,7 +105,7 @@ determined by file extension.
 
 The isotope for correction is automatically determined by the contents of the
 `isotopeLabel` column in your input data. AccuCor supports 13C, 2H and
-15N isotope corretion. Only single labeled experiments are supported. Be sure
+15N isotope correction. Only single labeled experiments are supported. Be sure
 to turn off isotope detection for other isotopes (see
 [El-MAVEN isotope detection documentation](https://github.com/ElucidataInc/ElMaven/wiki/Labeled-LCMS-Workflow#isotope-detection)).
 

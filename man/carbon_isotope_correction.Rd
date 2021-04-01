@@ -17,7 +17,7 @@ carbon_isotope_correction(
 \arguments{
 \item{formula}{String representing molecular formula}
 
-\item{datamatrix}{Matrix of abundnaces for each sample for each isotope}
+\item{datamatrix}{Matrix of abundances for each sample for each isotope}
 
 \item{label}{vector of integer labels}
 
