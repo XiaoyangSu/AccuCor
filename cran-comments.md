@@ -9,4 +9,4 @@ Testing via R CMD checks using GitHub Actions with following matrix:
 There were no ERRORs, WARNINGs, or NOTEs.
 
 ## Downstream dependencies
-As this is a new package, there are no downstream dependencies yet.
+There are currently no downstream dependencies for this package.
