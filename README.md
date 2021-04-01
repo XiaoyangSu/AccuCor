@@ -12,9 +12,7 @@ tab-separated test (`.tsv`) files.
 
 ## Installation
 ```R
-install.packages("devtools")
-library(devtools)
-devtools::install_github("XiaoyangSu/AccuCor")
+install.packages("accucor")
 ```
 
 ## Quickstart
