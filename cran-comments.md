@@ -1,3 +1,8 @@
+## Resubmission
+This is a resubmission. In this version I have:
+
+* Fixed a broken URL in README.md
+
 ## Test environments
 Testing via R CMD checks using GitHub Actions with following matrix:
 * os: windows-latest, r: 'release'
