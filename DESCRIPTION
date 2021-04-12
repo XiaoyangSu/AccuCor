@@ -1,7 +1,7 @@
 Package: accucor
 Type: Package
 Title: Natural Abundance Correction of Mass Spectrometer Data
-Version: 0.2.4
+Version: 0.2.4.9000
 Authors@R: c(
     person(given = "Xiaoyang",
            family = "Su",
@@ -22,7 +22,8 @@ Authors@R: c(
            role = "cph"))
 Description: An isotope natural abundance correction algorithm that
   is needed especially for high resolution mass spectrometers. Supports
-  correction for 13C, 2H and 15N.
+  correction for 13C, 2H and 15N. Su X, Lu W and Rabinowitz J (2017)
+  <doi:10.1021/acs.analchem.7b00396>.
 URL: https://github.com/XiaoyangSu/AccuCor
 BugReports: https://github.com/XiaoyangSu/AccuCor/issues
 License: MIT + file LICENSE
