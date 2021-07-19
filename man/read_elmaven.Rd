@@ -34,7 +34,7 @@ sample names.}
 \value{
 List containing three items: "original" data.frame which is result
       of read_excel, "cleaned" data.frame which with columns 'compound',
-      'formula', isotope_label', label_index', followed by columns for each
+      'formula', 'isotope_label', label_index', followed by columns for each
       sample, and "isotope" which is a character indicating the isotope
 }
 \description{

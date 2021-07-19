@@ -725,3 +725,56 @@ test_that("Carbon correction (dataframe)", {
   )
   expect_equal(corrected, expected_output)
 })
+
+
+# Test using newer El-Maven export with added columns
+test_that("Carbon correction (El-Maven v0.11.0)", {
+  resolution <- 100000
+  input_file <- system.file(
+        "extdata",
+        "elmaven_v0.11_export.csv",
+        package = "accucor"
+      )
+
+  corrected <- natural_abundance_correction(
+    path = input_file,
+    resolution = resolution,
+    output_base = FALSE
+  )
+
+  expected_output <- list(
+    "Original" = read_expected(
+      system.file(
+        "extdata",
+        "elmaven_v0.11_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = 1
+    ),
+    "Corrected" = read_expected(
+      system.file(
+        "extdata",
+        "elmaven_v0.11_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Corrected"
+    ),
+    "Normalized" = read_expected(
+      system.file(
+        "extdata",
+        "elmaven_v0.11_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Normalized"
+    ),
+    "PoolAfterDF" = read_expected(
+      system.file(
+        "extdata",
+        "elmaven_v0.11_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "PoolAfterDF"
+    )
+  )
+  expect_equal(corrected, expected_output)
+})
