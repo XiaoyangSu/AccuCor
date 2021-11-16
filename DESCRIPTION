@@ -29,7 +29,6 @@ BugReports: https://github.com/XiaoyangSu/AccuCor/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 Imports:
-    gsubfn,
     nnls,
     dplyr,
     stringr,
@@ -39,5 +38,5 @@ Imports:
     tibble,
     writexl,
     CHNOSZ
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Suggests: testthat

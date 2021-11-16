@@ -14,7 +14,7 @@
 #' @importFrom rlang .data
 #' @return List containing three items: "original" data.frame which is result
 #'       of read_excel, "cleaned" data.frame which with columns 'compound',
-#'       'formula', isotope_label', label_index', followed by columns for each
+#'       'formula', 'isotope_label', label_index', followed by columns for each
 #'       sample, and "isotope" which is a character indicating the isotope
 #' @export
 #' @examples
@@ -146,12 +146,20 @@ read_elmaven <-
     ))
   }
 
-
+#' Standardize data frame columns and data types
+#'
+#' @param df Data frame to clean
+#' @param columns_to_skip Specify column heading to skip. All other columns not
+#'      named 'compound', 'formula', and 'isotopelabel' will be assumed to be
+#'      sample names.
+#' @return "cleaned" data.frame which with columns 'compound', 'formula',
+#'      'isotope_label', label_index', followed by columns for each sample
+#' @importFrom rlang .data
 clean_data_frame <- function(df, columns_to_skip = NULL) {
   # Remove columns that are not needed
   if (is.null(columns_to_skip)) {
     columns_to_skip <- c(
-      "label", "goodPeakCount", "medMz", "medRt",
+      "label", "goodPeakCount", "medMz", "medRt", "adductName",
       "maxQuality", "compoundId", "expectedRtDiff", "ppmDiff", "parent"
     )
   }
