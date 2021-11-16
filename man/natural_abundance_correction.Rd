@@ -73,6 +73,7 @@ C13, H2, and N15 isotopes are supported. The isotopes are detected from the
 \examples{
 \dontrun{
 natural_abundance_correction("inst/extdata/C_Sample_Input_Simple.xlsx",
-                             Resolution=100000, ResDefAt=200)
+  Resolution = 100000, ResDefAt = 200
+)
 }
 }

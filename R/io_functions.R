@@ -29,21 +29,24 @@ read_elmaven <-
            filetype = NULL,
            ...) {
     if (is.null(filetype)) {
-      filetype = tools::file_ext(path)
+      filetype <- tools::file_ext(path)
     }
 
     # TODO Break this out to a function
     # Classic MAVEN style import
     if (!is.null(compound_database)) {
       compounds <- suppressMessages(readr::read_csv(compound_database))
-      names(compounds)[which(tolower(names(compounds)) == 'compound')] <-
+      names(compounds)[which(tolower(names(compounds)) == "compound")] <-
         "Compound"
-      names(compounds)[which(tolower(names(compounds)) == 'formula')] <-
+      names(compounds)[which(tolower(names(compounds)) == "formula")] <-
         "Formula"
 
       if (filetype %in% c("xls", "xlsx")) {
         InputDF <-
-          suppressMessages(readxl::read_excel(path, sheet = sheet, col_names = FALSE, ...))
+          suppressMessages(readxl::read_excel(
+            path,
+            sheet = sheet, col_names = FALSE, ...
+          ))
       } else if (filetype %in% c("csv", "txt")) {
         InputDF <-
           suppressMessages(readr::read_csv(path, col_names = FALSE, ...))
@@ -63,31 +66,40 @@ read_elmaven <-
       tmpInputDF <-
         dplyr::mutate(tmpInputDF, IsotopeLabel = .data$Compound)
 
-      for (i in 1:nrow(tmpInputDF)) {
+      for (i in seq_len(nrow(tmpInputDF))) {
         if (grepl("PARENT$", tmpInputDF[[i, 1]])) {
-          # tmpInputDF$isotopeLabel[i]=0
           tmpInputDF[[i, 1]] <- tmpInputDF[[i - 1, 1]]
         }
         else if (grepl("^\\w+-label-", tmpInputDF[[i, 1]])) {
-          # tmpInputDF$isotopeLabel[[i]] <- unlist(strapply(tmpInputDF[[i,1]], "(-)(\\d*)", ~ as.numeric(if (nchar(..2)) ..2)))
           tmpInputDF[[i, 1]] <- tmpInputDF[[i - 1, 1]]
         }
       }
       tmpInputDF <-
         dplyr::left_join(tmpInputDF,
-                         dplyr::select(compounds,
-                                       .data$Compound,
-                                       .data$Formula),
-                         by = "Compound")
+          dplyr::select(
+            compounds,
+            .data$Compound,
+            .data$Formula
+          ),
+          by = "Compound"
+        )
       tmpInputDF <-
-        dplyr::filter(tmpInputDF,
-                      grepl("PARENT$|^\\w+-label-",
-                            .data$IsotopeLabel))
-      tmpInputDF_1 <- dplyr::select(tmpInputDF, .data$Compound,
-                                    .data$Formula, .data$IsotopeLabel)
-      tmpInputDF_2 <- dplyr::select(tmpInputDF,
-                                    -.data$Compound,-.data$Formula,
-                                    -.data$IsotopeLabel)
+        dplyr::filter(
+          tmpInputDF,
+          grepl(
+            "PARENT$|^\\w+-label-",
+            .data$IsotopeLabel
+          )
+        )
+      tmpInputDF_1 <- dplyr::select(
+        tmpInputDF, .data$Compound,
+        .data$Formula, .data$IsotopeLabel
+      )
+      tmpInputDF_2 <- dplyr::select(
+        tmpInputDF,
+        -.data$Compound, -.data$Formula,
+        -.data$IsotopeLabel
+      )
       tmpInputDF_2 <-
         dplyr::mutate_if(tmpInputDF_2, is.character, as.numeric)
 
@@ -101,7 +113,9 @@ read_elmaven <-
       # El-Maven style import
     } else {
       if (filetype %in% c("xls", "xlsx")) {
-        InputDF <- suppressMessages(readxl::read_excel(path, sheet = sheet, ...))
+        InputDF <- suppressMessages(
+          readxl::read_excel(path, sheet = sheet, ...)
+        )
       } else if (filetype %in% c("csv", "txt")) {
         InputDF <- suppressMessages(readr::read_csv(path, ...))
       } else if (filetype %in% c("tsv")) {
@@ -113,8 +127,9 @@ read_elmaven <-
 
     # Remove empty rows (sometimes introduced by El-MAVEN)
     InputDF <-
-      InputDF[!(apply(InputDF, 1, function(x)
-        all(is.na(x)))),]
+      InputDF[!(apply(InputDF, 1, function(x) {
+        all(is.na(x))
+      })), ]
 
     # Created "cleaned" data frame with normalized labels
     cleaned_dataframe <-
@@ -134,30 +149,28 @@ read_elmaven <-
 
 clean_data_frame <- function(df, columns_to_skip = NULL) {
   # Remove columns that are not needed
-  if(is.null(columns_to_skip)) {
-    columns_to_skip = c(
+  if (is.null(columns_to_skip)) {
+    columns_to_skip <- c(
       "label", "goodPeakCount", "medMz", "medRt",
       "maxQuality", "compoundId", "expectedRtDiff", "ppmDiff", "parent"
     )
   }
-  keep_col_nums <- which(!(tolower(names(df)) %in% tolower(columns_to_skip)))
 
   # Find formula and compound columns
-  formula_col_num <- which(tolower(names(df)) == 'formula')
+  formula_col_num <- which(tolower(names(df)) == "formula")
   if (rlang::is_empty(formula_col_num)) {
     stop("Unable to find column 'formula' in input data")
   }
-  formula_col_name <- names(df)[formula_col_num]
 
   # Find compound column
-  compound_col_num <- which(tolower(names(df)) == 'compound')
+  compound_col_num <- which(tolower(names(df)) == "compound")
   if (rlang::is_empty(compound_col_num)) {
     stop("Unable to find column 'compound' in input data")
   }
   compound_col_name <- names(df)[compound_col_num]
 
   # Generate label column as incremental index
-  isotope_label_col_num <- which(tolower(names(df)) == 'isotopelabel')
+  isotope_label_col_num <- which(tolower(names(df)) == "isotopelabel")
   if (rlang::is_empty(isotope_label_col_num)) {
     stop("Unable to find column 'isotopelabel' in input data")
   }
@@ -165,17 +178,19 @@ clean_data_frame <- function(df, columns_to_skip = NULL) {
   isotope_labels <- dplyr::pull(df, isotope_label_col_num)
 
   sample_col_names <- names(df)[which(!(tolower(names(df)) %in%
-                                               tolower(c(columns_to_skip,
-                                                         "compound",
-                                                         "formula",
-                                                         "isotopelabel",
-                                                         "metaGroupId",
-                                                         "groupId"))))]
+    tolower(c(
+      columns_to_skip,
+      "compound",
+      "formula",
+      "isotopelabel",
+      "metaGroupId",
+      "groupId"
+    ))))]
   if (length(sample_col_names) == 0) {
     stop("Unable to find sample columns in input data")
   }
 
-  if ('metaGroupId' %in% names(df) && (! all(df$metaGroupId == 0))) {
+  if ("metaGroupId" %in% names(df) && (!all(df$metaGroupId == 0))) {
     metaGroupId <- df$metaGroupId
   } else {
     # Generate metaGroupId
@@ -183,15 +198,22 @@ clean_data_frame <- function(df, columns_to_skip = NULL) {
     metaGroupId <- dplyr::group_indices(tmp)
     # Check to be sure there is only one peak group per compound
     tmp <- dplyr::summarise(tmp,
-                            peak_group_count =
-                              sum(grepl(
-                                "PARENT",!!as.name(isotope_label_col_name)
-                              )),
-                            .groups = "keep")
+      peak_group_count =
+        sum(grepl(
+          "PARENT", !!as.name(isotope_label_col_name)
+        )),
+      .groups = "keep"
+    )
     tmp <- dplyr::filter(tmp, .data$peak_group_count > 1)
     tmp <- dplyr::pull(tmp, !!as.name(compound_col_name))
-    if (! rlang::is_empty(tmp)) {
-      stop(sprintf("Multiple peak groups detected for '%s', use metaGroupId column to distinguish peak groups (El-Maven >= 0.4)", tmp))
+    if (!rlang::is_empty(tmp)) {
+      stop(sprintf(
+        paste(
+          "Multiple peak groups detected for '%s',",
+          "use metaGroupId column to distinguish peak groups (El-Maven >= 0.4)"
+        ),
+        tmp
+      ))
     }
   }
 
@@ -203,55 +225,74 @@ clean_data_frame <- function(df, columns_to_skip = NULL) {
   cleaned_dataframe <- dplyr::bind_cols(
     metaGroupId = as.factor(metaGroupId),
     dplyr::select(df,
-                  compound = dplyr::all_of(compound_col_num),
-                  formula = dplyr::all_of(formula_col_num),
-                  isotope_label = dplyr::all_of(isotope_label_col_num)),
+      compound = dplyr::all_of(compound_col_num),
+      formula = dplyr::all_of(formula_col_num),
+      isotope_label = dplyr::all_of(isotope_label_col_num)
+    ),
     label_index = label_counts$label_counts,
-    dplyr::select(df, dplyr::all_of(sample_col_names)))
+    dplyr::select(df, dplyr::all_of(sample_col_names))
+  )
 
   return(cleaned_dataframe)
 }
 
 create_label_count <- function(isotope_labels) {
   isotope_info <- determine_isotope(isotope_labels)
-  label_counts <- stringr::str_replace_all(isotope_labels, isotope_info$isotope_prefix, "")
-  label_counts <- stringr::str_replace_all(label_counts, isotope_info$parent_prefix, "0")
+  label_counts <- stringr::str_replace_all(
+    isotope_labels,
+    isotope_info$isotope_prefix,
+    ""
+  )
+  label_counts <- stringr::str_replace_all(
+    label_counts,
+    isotope_info$parent_prefix,
+    "0"
+  )
   label_counts <- as.integer(label_counts)
   if (any(is.na(label_counts))) {
     bad_labels <- is.na(label_counts)
-    stop(paste0("Unable to parse isotope labels: ",
-               paste(isotope_labels[bad_labels], collapse = ", ")))
+    stop(paste0(
+      "Unable to parse isotope labels: ",
+      paste(isotope_labels[bad_labels], collapse = ", ")
+    ))
   }
   return(list(label_counts = label_counts, isotope = isotope_info$isotope))
 }
 
 
 determine_isotope <- function(isotope_labels) {
-  if(any(grepl("^D-", isotope_labels))) {
-    parent_prefix = "C12 PARENT"
-    isotope_prefix = "D-label-"
-    isotope = "D"
-  } else if(any(grepl("^D2-", isotope_labels))) {
-      parent_prefix = "C12 PARENT"
-      isotope_prefix = "D2-label-"
-      isotope = "D"
-  } else if(any(grepl("^C13", isotope_labels))) {
-    parent_prefix = "C12 PARENT"
-    isotope_prefix = "C13-label-"
-    isotope = "C"
-  } else if(any(grepl("^N15", isotope_labels))) {
-    parent_prefix = "C12 PARENT"
-    isotope_prefix = "N15-label-"
-    isotope = "N"
+  if (any(grepl("^D-", isotope_labels))) {
+    parent_prefix <- "C12 PARENT"
+    isotope_prefix <- "D-label-"
+    isotope <- "D"
+  } else if (any(grepl("^D2-", isotope_labels))) {
+    parent_prefix <- "C12 PARENT"
+    isotope_prefix <- "D2-label-"
+    isotope <- "D"
+  } else if (any(grepl("^C13", isotope_labels))) {
+    parent_prefix <- "C12 PARENT"
+    isotope_prefix <- "C13-label-"
+    isotope <- "C"
+  } else if (any(grepl("^N15", isotope_labels))) {
+    parent_prefix <- "C12 PARENT"
+    isotope_prefix <- "N15-label-"
+    isotope <- "N"
   } else {
-    stop("Unable to determine isotope from isotopeLabel column, must be one of (C, D, or N)")
+    stop(paste(
+      "Unable to determine isotope from isotopeLabel column,",
+      "must be one of (C, D, or N)"
+    ))
   }
-  return(list(isotope = isotope, parent_prefix = parent_prefix, isotope_prefix = isotope_prefix))
+  return(list(
+    isotope = isotope,
+    parent_prefix = parent_prefix,
+    isotope_prefix = isotope_prefix
+  ))
 }
 
 
 write_output <- function(dataframe_list, path, filetype = NULL, ...) {
-  if(identical(FALSE, path)) {
+  if (identical(FALSE, path)) {
     return(path)
   }
 
@@ -260,11 +301,16 @@ write_output <- function(dataframe_list, path, filetype = NULL, ...) {
   }
 
   if (is.null(filetype)) {
-    filetype = tools::file_ext(path)
+    filetype <- tools::file_ext(path)
   }
 
   if (filetype %in% c("xls", "xlsx")) {
-    output_path = paste(tools::file_path_sans_ext(path), "_corrected.", filetype, sep="")
+    output_path <- paste(
+      tools::file_path_sans_ext(path),
+      "_corrected.",
+      filetype,
+      sep = ""
+    )
     message(paste("Output written to: '", output_path, "'", sep = ""))
     writexl::write_xlsx(dataframe_list, output_path, ...)
   } else if (filetype %in% c("csv", "txt", "tsv")) {
@@ -275,10 +321,12 @@ write_output <- function(dataframe_list, path, filetype = NULL, ...) {
     }
     for (sheet in names(dataframe_list)) {
       if (tolower(sheet) == "original") {
-        next()
+        next
       }
       sheet_path <- paste(tools::file_path_sans_ext(path), "_", tolower(sheet),
-                          ".", filetype, sep="")
+        ".", filetype,
+        sep = ""
+      )
       message(paste("Output written to: '", sheet_path, "'", sep = ""))
       write_func(dataframe_list[[sheet]], sheet_path, ...)
     }

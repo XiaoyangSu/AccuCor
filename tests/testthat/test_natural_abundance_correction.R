@@ -3,34 +3,60 @@ library(accucor)
 
 read_expected <- function(file, sheet) {
   expected <- readxl::read_excel(path = file, sheet = sheet)
-  expected <- dplyr::mutate_at(expected,
-                               dplyr::vars(dplyr::ends_with("_Label")),
-                               as.integer)
+  expected <- dplyr::mutate_at(
+    expected,
+    dplyr::vars(dplyr::ends_with("_Label")),
+    as.integer
+  )
 }
 
 test_that("Carbon correction (Excel, simple format)", {
   resolution <- 100000
-  input_file <- system.file("extdata", "C_Sample_Input_Simple.xlsx",
-                                   package = "accucor")
+  input_file <- system.file(
+    "extdata",
+    "C_Sample_Input_Simple.xlsx",
+    package = "accucor"
+  )
 
   corrected <- natural_abundance_correction(
     path = input_file,
     output_base = FALSE,
-    resolution = resolution)
+    resolution = resolution
+  )
 
   expected_output <- list(
     "Original" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple.xlsx", package = "accucor"),
-      sheet = 1),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple.xlsx",
+        package = "accucor"
+      ),
+      sheet = 1
+    ),
     "Corrected" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Corrected"),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Corrected"
+    ),
     "Normalized" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Normalized"),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Normalized"
+    ),
     "PoolAfterDF" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "PoolAfterDF")
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "PoolAfterDF"
+    )
   )
 
   expect_equal(corrected, expected_output)
@@ -39,31 +65,60 @@ test_that("Carbon correction (Excel, simple format)", {
 
 test_that("PoolBeforeDF parameter", {
   resolution <- 100000
-  input_file <- system.file("extdata", "C_Sample_Input_Simple.xlsx",
-                            package = "accucor")
+  input_file <- system.file(
+    "extdata",
+    "C_Sample_Input_Simple.xlsx",
+    package = "accucor"
+  )
 
   corrected <- natural_abundance_correction(
     path = input_file,
     output_base = FALSE,
     report_pool_size_before_df = TRUE,
-    resolution = resolution)
+    resolution = resolution
+  )
 
   expected_output <- list(
     "Original" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple.xlsx", package = "accucor"),
-      sheet = 1),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple.xlsx",
+        package = "accucor"
+      ),
+      sheet = 1
+    ),
     "Corrected" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Corrected"),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Corrected"
+    ),
     "Normalized" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Normalized"),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Normalized"
+    ),
     "PoolAfterDF" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "PoolAfterDF"),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "PoolAfterDF"
+    ),
     "PoolBeforeDF" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "PoolBeforeDF")
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "PoolBeforeDF"
+    )
   )
 
   expect_equal(corrected, expected_output)
@@ -72,27 +127,52 @@ test_that("PoolBeforeDF parameter", {
 test_that("Carbon correction (csv, simple format)", {
   resolution <- 100000
   resolution_defined_at <- 200
-  input_file <- system.file("extdata", "C_Sample_Input_Simple.csv",
-                            package = "accucor")
+  input_file <- system.file(
+    "extdata",
+    "C_Sample_Input_Simple.csv",
+    package = "accucor"
+  )
 
   corrected <- natural_abundance_correction(
     path = input_file,
     output_base = FALSE,
-    resolution = resolution, resolution_defined_at = resolution_defined_at)
+    resolution = resolution,
+    resolution_defined_at = resolution_defined_at
+  )
 
   expected_output <- list(
     "Original" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple.xlsx", package = "accucor"),
-      sheet = 1),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple.xlsx",
+        package = "accucor"
+      ),
+      sheet = 1
+    ),
     "Corrected" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Corrected"),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Corrected"
+    ),
     "Normalized" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Normalized"),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Normalized"
+    ),
     "PoolAfterDF" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "PoolAfterDF")
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "PoolAfterDF"
+    )
   )
 
   expect_equal(corrected, expected_output)
@@ -103,27 +183,50 @@ test_that("Carbon correction (Excel, Classic MAVEN copy/paste)", {
   resolution <- 100000
   resolution_defined_at <- 200
   input_file <- system.file("extdata", "C_Sample_Input.xlsx",
-                            package = "accucor")
+    package = "accucor"
+  )
   knowns_file <- system.file("extdata", "KNOWNS.csv", package = "accucor")
   corrected <- natural_abundance_correction(
     path = input_file,
     compound_database = knowns_file,
     output_base = FALSE,
-    resolution = resolution, resolution_defined_at = resolution_defined_at)
+    resolution = resolution,
+    resolution_defined_at = resolution_defined_at
+  )
 
   expected_output <- list(
     "Original" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = 1),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = 1
+    ),
     "Corrected" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Corrected"),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Corrected"
+    ),
     "Normalized" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Normalized"),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Normalized"
+    ),
     "PoolAfterDF" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "PoolAfterDF")
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "PoolAfterDF"
+    )
   )
 
   expect_equal(corrected, expected_output)
@@ -134,27 +237,49 @@ test_that("Deuterium correction (Excel, simple format)", {
   resolution <- 100000
   resolution_defined_at <- 200
   input_file <- system.file("extdata", "D_Sample_Input_Simple.xlsx",
-                                   package = "accucor")
+    package = "accucor"
+  )
 
   corrected <- natural_abundance_correction(
     path = input_file,
     output_base = FALSE,
     resolution = resolution,
-    resolution_defined_at = resolution_defined_at)
+    resolution_defined_at = resolution_defined_at
+  )
 
   expected_output <- list(
     "Original" = read_expected(
-      system.file("extdata", "D_Sample_Input_Simple.xlsx", package = "accucor"),
-      sheet = 1),
+      system.file(
+        "extdata",
+        "D_Sample_Input_Simple.xlsx",
+        package = "accucor"
+      ),
+      sheet = 1
+    ),
     "Corrected" = read_expected(
-      system.file("extdata", "D_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Corrected"),
+      system.file(
+        "extdata",
+        "D_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Corrected"
+    ),
     "Normalized" = read_expected(
-      system.file("extdata", "D_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Normalized"),
+      system.file(
+        "extdata",
+        "D_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Normalized"
+    ),
     "PoolAfterDF" = read_expected(
-      system.file("extdata", "D_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "PoolAfterDF")
+      system.file(
+        "extdata",
+        "D_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "PoolAfterDF"
+    )
   )
 
   expect_equal(corrected, expected_output)
@@ -165,28 +290,50 @@ test_that("Deuterium correction (Excel, Classic Maven Cut/Paste)", {
   resolution <- 100000
   resolution_defined_at <- 200
   input_file <- system.file("extdata", "D_Sample_Input.xlsx",
-                            package = "accucor")
+    package = "accucor"
+  )
   knowns_file <- system.file("extdata", "KNOWNS.csv", package = "accucor")
 
   corrected <- natural_abundance_correction(
     path = input_file,
     compound_database = knowns_file,
     output_base = FALSE,
-    resolution = resolution, resolution_defined_at = resolution_defined_at)
+    resolution = resolution, resolution_defined_at = resolution_defined_at
+  )
 
   expected_output <- list(
     "Original" = read_expected(
-      system.file("extdata", "D_Sample_Input_Simple.xlsx", package = "accucor"),
-      sheet = 1),
+      system.file(
+        "extdata",
+        "D_Sample_Input_Simple.xlsx",
+        package = "accucor"
+      ),
+      sheet = 1
+    ),
     "Corrected" = read_expected(
-      system.file("extdata", "D_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Corrected"),
+      system.file(
+        "extdata",
+        "D_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Corrected"
+    ),
     "Normalized" = read_expected(
-      system.file("extdata", "D_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Normalized"),
+      system.file(
+        "extdata",
+        "D_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Normalized"
+    ),
     "PoolAfterDF" = read_expected(
-      system.file("extdata", "D_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "PoolAfterDF")
+      system.file(
+        "extdata",
+        "D_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "PoolAfterDF"
+    )
   )
 
   expect_equal(corrected, expected_output)
@@ -196,27 +343,52 @@ test_that("Deuterium correction (Excel, Classic Maven Cut/Paste)", {
 test_that("Nitrogen correction (Excel, simple format)", {
   resolution <- 140000
   resolution_defined_at <- 200
-  input_file <- system.file("extdata", "N_Sample_Input_Simple.xlsx",
-                            package = "accucor")
+  input_file <- system.file(
+    "extdata",
+    "N_Sample_Input_Simple.xlsx",
+    package = "accucor"
+  )
 
   corrected <- natural_abundance_correction(
     path = input_file,
     output_base = FALSE,
-    resolution = resolution, resolution_defined_at = resolution_defined_at)
+    resolution = resolution,
+    resolution_defined_at = resolution_defined_at
+  )
 
   expected_output <- list(
     "Original" = read_expected(
-      system.file("extdata", "N_Sample_Input_Simple.xlsx", package = "accucor"),
-      sheet = 1),
+      system.file(
+        "extdata",
+        "N_Sample_Input_Simple.xlsx",
+        package = "accucor"
+      ),
+      sheet = 1
+    ),
     "Corrected" = read_expected(
-      system.file("extdata", "N_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Corrected"),
+      system.file(
+        "extdata",
+        "N_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Corrected"
+    ),
     "Normalized" = read_expected(
-      system.file("extdata", "N_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Normalized"),
+      system.file(
+        "extdata",
+        "N_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Normalized"
+    ),
     "PoolAfterDF" = read_expected(
-      system.file("extdata", "N_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "PoolAfterDF")
+      system.file(
+        "extdata",
+        "N_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "PoolAfterDF"
+    )
   )
 
   expect_equal(corrected, expected_output)
@@ -226,29 +398,54 @@ test_that("Nitrogen correction (Excel, simple format)", {
 test_that("Nitrogen correction (Excel, Classic Maven Cut/Paste)", {
   resolution <- 140000
   resolution_defined_at <- 200
-  input_file <- system.file("extdata", "N_Sample_Input.xlsx",
-                            package = "accucor")
+  input_file <- system.file(
+    "extdata",
+    "N_Sample_Input.xlsx",
+    package = "accucor"
+  )
   knowns_file <- system.file("extdata", "KNOWNS.csv", package = "accucor")
 
   corrected <- natural_abundance_correction(
     path = input_file,
     compound_database = knowns_file,
     output_base = FALSE,
-    resolution = resolution, resolution_defined_at = resolution_defined_at)
+    resolution = resolution,
+    resolution_defined_at = resolution_defined_at
+  )
 
   expected_output <- list(
     "Original" = read_expected(
-      system.file("extdata", "N_Sample_Input_Simple.xlsx", package = "accucor"),
-      sheet = 1),
+      system.file(
+        "extdata",
+        "N_Sample_Input_Simple.xlsx",
+        package = "accucor"
+      ),
+      sheet = 1
+    ),
     "Corrected" = read_expected(
-      system.file("extdata", "N_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Corrected"),
+      system.file(
+        "extdata",
+        "N_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Corrected"
+    ),
     "Normalized" = read_expected(
-      system.file("extdata", "N_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Normalized"),
+      system.file(
+        "extdata",
+        "N_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Normalized"
+    ),
     "PoolAfterDF" = read_expected(
-      system.file("extdata", "N_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "PoolAfterDF")
+      system.file(
+        "extdata",
+        "N_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "PoolAfterDF"
+    )
   )
 
   expect_equal(corrected, expected_output)
@@ -258,8 +455,11 @@ test_that("Nitrogen correction (Excel, Classic Maven Cut/Paste)", {
 test_that("Carbon correction (csv, El-MAVEN export (with set names))", {
   resolution <- 140000
   resolution_defined_at <- 200
-  input_file <- system.file("extdata", "elmaven_export.csv",
-                            package = "accucor")
+  input_file <- system.file(
+    "extdata",
+    "elmaven_export.csv",
+    package = "accucor"
+  )
 
   # This file includes the empty line from exported "set names" which is also
   # incorrectly formatted (one too few columns)
@@ -267,21 +467,43 @@ test_that("Carbon correction (csv, El-MAVEN export (with set names))", {
   corrected <- expect_warning(natural_abundance_correction(
     path = input_file,
     output_base = FALSE,
-    resolution = resolution, resolution_defined_at = resolution_defined_at))
+    resolution = resolution,
+    resolution_defined_at = resolution_defined_at
+  ))
 
   expected_output <- list(
     "Original" = read_expected(
-      system.file("extdata", "elmaven_export_corrected.xlsx", package = "accucor"),
-      sheet = 1),
+      system.file(
+        "extdata",
+        "elmaven_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = 1
+    ),
     "Corrected" = read_expected(
-      system.file("extdata", "elmaven_export_corrected.xlsx", package = "accucor"),
-      sheet = "Corrected"),
+      system.file(
+        "extdata",
+        "elmaven_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Corrected"
+    ),
     "Normalized" = read_expected(
-      system.file("extdata", "elmaven_export_corrected.xlsx", package = "accucor"),
-      sheet = "Normalized"),
+      system.file(
+        "extdata",
+        "elmaven_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Normalized"
+    ),
     "PoolAfterDF" = read_expected(
-      system.file("extdata", "elmaven_export_corrected.xlsx", package = "accucor"),
-      sheet = "PoolAfterDF")
+      system.file(
+        "extdata",
+        "elmaven_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "PoolAfterDF"
+    )
   )
 
   expect_equivalent(corrected, expected_output)
@@ -291,27 +513,52 @@ test_that("Carbon correction (csv, El-MAVEN export (with set names))", {
 test_that("Carbon correction (Excel, El-MAVEN export (with set names))", {
   resolution <- 140000
   resolution_defined_at <- 200
-  input_file <- system.file("extdata", "elmaven_export.xlsx",
-                            package = "accucor")
+  input_file <- system.file(
+    "extdata",
+    "elmaven_export.xlsx",
+    package = "accucor"
+  )
 
   corrected <- natural_abundance_correction(
     path = input_file,
     output_base = FALSE,
-    resolution = resolution, resolution_defined_at = resolution_defined_at)
+    resolution = resolution,
+    resolution_defined_at = resolution_defined_at
+  )
 
   expected_output <- list(
     "Original" = read_expected(
-      system.file("extdata", "elmaven_export_corrected.xlsx", package = "accucor"),
-      sheet = 1),
+      system.file(
+        "extdata",
+        "elmaven_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = 1
+    ),
     "Corrected" = read_expected(
-      system.file("extdata", "elmaven_export_corrected.xlsx", package = "accucor"),
-      sheet = "Corrected"),
+      system.file(
+        "extdata",
+        "elmaven_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Corrected"
+    ),
     "Normalized" = read_expected(
-      system.file("extdata", "elmaven_export_corrected.xlsx", package = "accucor"),
-      sheet = "Normalized"),
+      system.file(
+        "extdata",
+        "elmaven_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Normalized"
+    ),
     "PoolAfterDF" = read_expected(
-      system.file("extdata", "elmaven_export_corrected.xlsx", package = "accucor"),
-      sheet = "PoolAfterDF")
+      system.file(
+        "extdata",
+        "elmaven_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "PoolAfterDF"
+    )
   )
 
   expect_equal(corrected, expected_output)
@@ -320,56 +567,104 @@ test_that("Carbon correction (Excel, El-MAVEN export (with set names))", {
 
 test_that("Carbon correction (csv, El-MAVEN export (w/o names))", {
   resolution <- 140000
-  input_file <- system.file("extdata", "elmaven_d2_export.csv",
-                            package = "accucor")
+  input_file <- system.file(
+    "extdata",
+    "elmaven_d2_export.csv",
+    package = "accucor"
+  )
 
   corrected <- natural_abundance_correction(
     path = input_file,
     resolution = resolution,
-    output_base = FALSE)
+    output_base = FALSE
+  )
 
   expected_output <- list(
     "Original" = read_expected(
-      system.file("extdata", "elmaven_d2_export_corrected.xlsx", package = "accucor"),
-      sheet = 1),
+      system.file(
+        "extdata",
+        "elmaven_d2_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = 1
+    ),
     "Corrected" = read_expected(
-      system.file("extdata", "elmaven_d2_export_corrected.xlsx", package = "accucor"),
-      sheet = "Corrected"),
+      system.file(
+        "extdata",
+        "elmaven_d2_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Corrected"
+    ),
     "Normalized" = read_expected(
-      system.file("extdata", "elmaven_d2_export_corrected.xlsx", package = "accucor"),
-      sheet = "Normalized"),
+      system.file(
+        "extdata",
+        "elmaven_d2_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Normalized"
+    ),
     "PoolAfterDF" = read_expected(
-      system.file("extdata", "elmaven_d2_export_corrected.xlsx", package = "accucor"),
-      sheet = "PoolAfterDF")
+      system.file(
+        "extdata",
+        "elmaven_d2_export_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "PoolAfterDF"
+    )
   )
 
   expect_equal(corrected, expected_output)
 })
 
 
-test_that("Carbon correction (csv, El-MAVEN export, multiple groups per compound)", {
+test_that("Carbon correction (csv, El-MAVEN, multiple groups per compound)", {
   resolution <- 140000
-  input_file <- system.file("extdata", "alanine_three_peak_groups.csv",
-                            package = "accucor")
+  input_file <- system.file(
+    "extdata",
+    "alanine_three_peak_groups.csv",
+    package = "accucor"
+  )
 
   corrected <- natural_abundance_correction(
     path = input_file,
     resolution = resolution,
-    output_base = FALSE)
+    output_base = FALSE
+  )
 
   expected_output <- list(
     "Original" = read_expected(
-      system.file("extdata", "alanine_three_peak_groups_corrected.xlsx", package = "accucor"),
-      sheet = 1),
+      system.file(
+        "extdata",
+        "alanine_three_peak_groups_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = 1
+    ),
     "Corrected" = read_expected(
-      system.file("extdata", "alanine_three_peak_groups_corrected.xlsx", package = "accucor"),
-      sheet = "Corrected"),
+      system.file(
+        "extdata",
+        "alanine_three_peak_groups_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Corrected"
+    ),
     "Normalized" = read_expected(
-      system.file("extdata", "alanine_three_peak_groups_corrected.xlsx", package = "accucor"),
-      sheet = "Normalized"),
+      system.file(
+        "extdata",
+        "alanine_three_peak_groups_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Normalized"
+    ),
     "PoolAfterDF" = read_expected(
-      system.file("extdata", "alanine_three_peak_groups_corrected.xlsx", package = "accucor"),
-      sheet = "PoolAfterDF")
+      system.file(
+        "extdata",
+        "alanine_three_peak_groups_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "PoolAfterDF"
+    )
   )
 
   expect_equal(corrected, expected_output)
@@ -380,28 +675,53 @@ test_that("Carbon correction (dataframe)", {
   resolution <- 100000
   input_data <- as.data.frame(
     readxl::read_excel(
-      path = system.file("extdata", "C_Sample_Input_Simple.xlsx", package = "accucor"),
-      sheet = 1)
+      path = system.file(
+        "extdata",
+        "C_Sample_Input_Simple.xlsx",
+        package = "accucor"
+      ),
+      sheet = 1
+    )
   )
 
   corrected <- natural_abundance_correction(
     data = input_data,
-    resolution = resolution)
+    resolution = resolution
+  )
 
   expected_output <- list(
     "Original" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple.xlsx", package = "accucor"),
-      sheet = 1),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple.xlsx",
+        package = "accucor"
+      ),
+      sheet = 1
+    ),
     "Corrected" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Corrected"),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Corrected"
+    ),
     "Normalized" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "Normalized"),
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "Normalized"
+    ),
     "PoolAfterDF" = read_expected(
-      system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor"),
-      sheet = "PoolAfterDF")
+      system.file(
+        "extdata",
+        "C_Sample_Input_Simple_corrected.xlsx",
+        package = "accucor"
+      ),
+      sheet = "PoolAfterDF"
+    )
   )
   expect_equal(corrected, expected_output)
 })
-
