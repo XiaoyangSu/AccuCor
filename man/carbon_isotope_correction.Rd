@@ -36,3 +36,11 @@ Named list of matrices: 'Corrected', 'Normalized',
 \description{
 Natural Abundance carbon isotope correction for one metabolite
 }
+\examples{
+\dontrun{
+carbon_isotope_correction(formula = "C6H13O9P",
+                          datamatrix = DataMatrix,
+                          label = c(0, 1, 2, 3, 4, 5),
+                          Resolution = 100000)
+}
+}
