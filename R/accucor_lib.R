@@ -11,6 +11,14 @@
 #' @importFrom dplyr "%>%"
 #' @return Named list of matrices: 'Corrected', 'Normalized',
 #'      'PoolBeforeDF', and 'PoolAfterDF'.
+#' @export
+#' @examples
+#' \dontrun{
+#' carbon_isotope_correction(formula = "C6H13O9P",
+#'                           datamatrix = DataMatrix,
+#'                           label = c(0, 1, 2, 3, 4, 5),
+#'                           Resolution = 100000)
+#' }
 carbon_isotope_correction <- function(formula,
                                       datamatrix,
                                       label,
@@ -216,6 +224,14 @@ carbon_isotope_correction <- function(formula,
 #' @importFrom rlang .data
 #' @return Named list of matrices: 'Corrected', 'Normalized',
 #'      'PoolBeforeDF', and 'PoolAfterDF'.
+#' @export
+#' @examples
+#' \dontrun{
+#' deuterium_isotope_correction(formula = "C6H13O9P",
+#'                              datamatrix = DataMatrix,
+#'                              label = c(0, 1),
+#'                              Resolution = 100000)
+#' }
 deuterium_isotope_correction <- function(formula,
                                          datamatrix,
                                          label,
@@ -419,6 +435,14 @@ deuterium_isotope_correction <- function(formula,
 #' @importFrom rlang .data
 #' @return Named list of matrices: 'Corrected', 'Normalized',
 #'      'PoolBeforeDF', and 'PoolAfterDF'.
+#' @export
+#' @examples
+#' \dontrun{
+#' nitrogen_isotope_correction(formula = "C23H38N7O17P3S",
+#'                              datamatrix = DataMatrix,
+#'                              label = c(0, 1, 2, 3, 4, 5, 6, 7),
+#'                              Resolution = 140000)
+#' }
 nitrogen_isotope_correction <- function(formula,
                                         datamatrix,
                                         label,
