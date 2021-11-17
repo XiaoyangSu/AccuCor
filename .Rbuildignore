@@ -9,3 +9,4 @@
 ^CRAN-RELEASE$
 ^\.github$
 ^\.lintr$
+^revdep$
