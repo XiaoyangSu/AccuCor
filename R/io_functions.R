@@ -69,8 +69,7 @@ read_elmaven <-
       for (i in seq_len(nrow(tmpInputDF))) {
         if (grepl("PARENT$", tmpInputDF[[i, 1]])) {
           tmpInputDF[[i, 1]] <- tmpInputDF[[i - 1, 1]]
-        }
-        else if (grepl("^\\w+-label-", tmpInputDF[[i, 1]])) {
+        } else if (grepl("^\\w+-label-", tmpInputDF[[i, 1]])) {
           tmpInputDF[[i, 1]] <- tmpInputDF[[i - 1, 1]]
         }
       }
