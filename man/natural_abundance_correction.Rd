@@ -62,7 +62,7 @@ Named list of matrices: 'Corrected', 'Normalized',
 intensities of isotopically labeled mass spectrometry data. It was designed
 to work with input data from
 \href{https://elucidatainc.github.io/ElMaven/}{El-MAVEN} and
-\href{http://maven.princeton.edu}{MAVEN} software.
+\href{https://github.com/eugenemel/maven}{MAVEN} software.
 }
 \details{
 C13, H2, and N15 isotopes are supported. The isotopes are detected from the

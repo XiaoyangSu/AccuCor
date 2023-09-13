@@ -642,7 +642,7 @@ nitrogen_isotope_correction <- function(formula,
 #' intensities of isotopically labeled mass spectrometry data. It was designed
 #' to work with input data from
 #' \href{https://elucidatainc.github.io/ElMaven/}{El-MAVEN} and
-#' \href{http://maven.princeton.edu}{MAVEN} software.
+#' \href{https://github.com/eugenemel/maven}{MAVEN} software.
 #'
 #' C13, H2, and N15 isotopes are supported. The isotopes are detected from the
 #' \code{isotopeLabel} column of the input file. The expected label text is
