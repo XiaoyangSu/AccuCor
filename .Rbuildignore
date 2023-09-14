@@ -10,3 +10,4 @@
 ^\.github$
 ^\.lintr$
 ^revdep$
+^CRAN-SUBMISSION$
