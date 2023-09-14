@@ -731,10 +731,10 @@ test_that("Carbon correction (dataframe)", {
 test_that("Carbon correction (El-Maven v0.11.0)", {
   resolution <- 100000
   input_file <- system.file(
-        "extdata",
-        "elmaven_v0.11_export.csv",
-        package = "accucor"
-      )
+    "extdata",
+    "elmaven_v0.11_export.csv",
+    package = "accucor"
+  )
 
   corrected <- natural_abundance_correction(
     path = input_file,

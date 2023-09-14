@@ -3,6 +3,7 @@
 \docType{package}
 \name{accucor}
 \alias{accucor}
+\alias{accucor-package}
 \title{accucor: A package for natural abundance correction of mass spectrometer data}
 \description{
 AccuCor is an isotope natural abundance correction algorithm that
@@ -14,3 +15,26 @@ supports correction for 13C, 2H and 15N.
 \code{\link{natural_abundance_correction}}
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/XiaoyangSu/AccuCor}
+  \item Report bugs at \url{https://github.com/XiaoyangSu/AccuCor/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Lance Parsons \email{lparsons@princeton.edu} (\href{https://orcid.org/0000-0002-8521-714X}{ORCID})
+
+Authors:
+\itemize{
+  \item Xiaoyang Su \email{xs137@rwjms.rutgers.edu} (\href{https://orcid.org/0000-0001-8081-1396}{ORCID})
+}
+
+Other contributors:
+\itemize{
+  \item Yujue Wang \email{yw429@rwjms.rutgers.edu} (\href{https://orcid.org/0000-0001-7088-1729}{ORCID}) [contributor]
+  \item Princeton University [copyright holder]
+}
+
+}

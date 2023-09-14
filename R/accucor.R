@@ -9,4 +9,4 @@
 #'
 #' @docType package
 #' @name accucor
-NULL
+"_PACKAGE"

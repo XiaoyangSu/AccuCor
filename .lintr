@@ -1,13 +1,5 @@
-linters: with_defaults(
+linters: linters_with_defaults(
     object_name_linter = NULL, # 107
-    cyclocomp_linter = NULL, # 5
-    dummy_linter = NULL
-  )
-exclusions: list(
-    "man/accucor.Rd",
-    "man/carbon_isotope_correction.Rd",
-    "man/deuterium_isotope_correction.Rd",
-    "man/natural_abundance_correction.Rd",
-    "man/nitrogen_isotope_correction.Rd",
-    "man/read_elmaven.Rd"
-  )
+    cyclocomp_linter = NULL # 5
+  ) # see vignette("lintr")
+encoding: "UTF-8"

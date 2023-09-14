@@ -14,10 +14,12 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' carbon_isotope_correction(formula = "C6H13O9P",
-#'                           datamatrix = DataMatrix,
-#'                           label = c(0, 1, 2, 3, 4, 5),
-#'                           Resolution = 100000)
+#' carbon_isotope_correction(
+#'   formula = "C6H13O9P",
+#'   datamatrix = DataMatrix,
+#'   label = c(0, 1, 2, 3, 4, 5),
+#'   Resolution = 100000
+#' )
 #' }
 carbon_isotope_correction <- function(formula,
                                       datamatrix,
@@ -62,8 +64,7 @@ carbon_isotope_correction <- function(formula,
         "check the input file."
       )
     )
-  }
-  else {
+  } else {
     for (i in seq_along(label)) {
       ExpMatrix[label[i] + 1, ] <- datamatrix[i, ]
     }
@@ -227,10 +228,12 @@ carbon_isotope_correction <- function(formula,
 #' @export
 #' @examples
 #' \dontrun{
-#' deuterium_isotope_correction(formula = "C6H13O9P",
-#'                              datamatrix = DataMatrix,
-#'                              label = c(0, 1),
-#'                              Resolution = 100000)
+#' deuterium_isotope_correction(
+#'   formula = "C6H13O9P",
+#'   datamatrix = DataMatrix,
+#'   label = c(0, 1),
+#'   Resolution = 100000
+#' )
 #' }
 deuterium_isotope_correction <- function(formula,
                                          datamatrix,
@@ -275,8 +278,7 @@ deuterium_isotope_correction <- function(formula,
         "check the input file."
       )
     )
-  }
-  else {
+  } else {
     for (i in seq_along(label)) {
       ExpMatrix[label[i] + 1, ] <- datamatrix[i, ]
     }
@@ -347,16 +349,16 @@ deuterium_isotope_correction <- function(formula,
     dplyr::mutate(
       MassDiff =
         (13.00335 - 12) * .data$C13 +
-          (15.00011 - 14.00307) * .data$N15 +
-          (16.99913 - 15.99491) * .data$O17 +
-          (17.99916 - 15.99491) * .data$O18 +
-          (32.97146 - 31.97207) * .data$S33 +
-          (33.96787 - 31.97207) * .data$S34 +
-          (28.97649 - 27.97693) * .data$Si29 +
-          (29.97377 - 27.97693) * .data$Si30 +
-          (36.96590 - 34.96885) * .data$Cl37 +
-          (80.91629 - 78.91833) * .data$Br81 -
-          (2.0141 - 1.00783) * .data$MassSum
+        (15.00011 - 14.00307) * .data$N15 +
+        (16.99913 - 15.99491) * .data$O17 +
+        (17.99916 - 15.99491) * .data$O18 +
+        (32.97146 - 31.97207) * .data$S33 +
+        (33.96787 - 31.97207) * .data$S34 +
+        (28.97649 - 27.97693) * .data$Si29 +
+        (29.97377 - 27.97693) * .data$Si30 +
+        (36.96590 - 34.96885) * .data$Cl37 +
+        (80.91629 - 78.91833) * .data$Br81 -
+        (2.0141 - 1.00783) * .data$MassSum
     ) %>%
     dplyr::filter(abs(.data$MassDiff) < Mass.Limit)
 
@@ -438,10 +440,12 @@ deuterium_isotope_correction <- function(formula,
 #' @export
 #' @examples
 #' \dontrun{
-#' nitrogen_isotope_correction(formula = "C23H38N7O17P3S",
-#'                              datamatrix = DataMatrix,
-#'                              label = c(0, 1, 2, 3, 4, 5, 6, 7),
-#'                              Resolution = 140000)
+#' nitrogen_isotope_correction(
+#'   formula = "C23H38N7O17P3S",
+#'   datamatrix = DataMatrix,
+#'   label = c(0, 1, 2, 3, 4, 5, 6, 7),
+#'   Resolution = 140000
+#' )
 #' }
 nitrogen_isotope_correction <- function(formula,
                                         datamatrix,
@@ -486,8 +490,7 @@ nitrogen_isotope_correction <- function(formula,
         "check the input file."
       )
     )
-  }
-  else {
+  } else {
     for (i in seq_along(label)) {
       ExpMatrix[label[i] + 1, ] <- datamatrix[i, ]
     }
@@ -541,34 +544,33 @@ nitrogen_isotope_correction <- function(formula,
     dplyr::mutate(
       MassSum =
         .data$C13 +
-          .data$H2 +
-          .data$O17 +
-          .data$O18 * 2 +
-          .data$S33 +
-          .data$S34 * 2 +
-          .data$Si29 +
-          .data$Si30 * 2 +
-          .data$Cl37 * 2 +
-          .data$Br81 * 2
+        .data$H2 +
+        .data$O17 +
+        .data$O18 * 2 +
+        .data$S33 +
+        .data$S34 * 2 +
+        .data$Si29 +
+        .data$Si30 * 2 +
+        .data$Cl37 * 2 +
+        .data$Br81 * 2
     ) %>%
-    dplyr::filter((
-      .data$O17 + .data$O18) <= AtomNumber["O"] &
-      (.data$S33 + .data$S34) <= AtomNumber["S"] &
-      (.data$Si29 + .data$Si30) <= AtomNumber["Si"] &
-      .data$MassSum <= AtomNumber["N"]) %>%
+    dplyr::filter((.data$O17 + .data$O18) <= AtomNumber["O"] &
+                    (.data$S33 + .data$S34) <= AtomNumber["S"] &
+                    (.data$Si29 + .data$Si30) <= AtomNumber["Si"] &
+                    .data$MassSum <= AtomNumber["N"]) %>%
     dplyr::mutate(
       MassDiff =
         (13.00335 - 12) * .data$C13 +
-          (2.0141 - 1.00783) * .data$H2 +
-          (16.99913 - 15.99491) * .data$O17 +
-          (17.99916 - 15.99491) * .data$O18 +
-          (32.97146 - 31.97207) * .data$S33 +
-          (33.96787 - 31.97207) * .data$S34 +
-          (28.97649 - 27.97693) * .data$Si29 +
-          (29.97377 - 27.97693) * .data$Si30 +
-          (36.96590 - 34.96885) * .data$Cl37 +
-          (80.91629 - 78.91833) * .data$Br81 -
-          (15.00011 - 14.00307) * .data$MassSum
+        (2.0141 - 1.00783) * .data$H2 +
+        (16.99913 - 15.99491) * .data$O17 +
+        (17.99916 - 15.99491) * .data$O18 +
+        (32.97146 - 31.97207) * .data$S33 +
+        (33.96787 - 31.97207) * .data$S34 +
+        (28.97649 - 27.97693) * .data$Si29 +
+        (29.97377 - 27.97693) * .data$Si30 +
+        (36.96590 - 34.96885) * .data$Cl37 +
+        (80.91629 - 78.91833) * .data$Br81 -
+        (15.00011 - 14.00307) * .data$MassSum
     ) %>%
     dplyr::filter(abs(.data$MassDiff) < Mass.Limit)
 
@@ -640,7 +642,7 @@ nitrogen_isotope_correction <- function(formula,
 #' intensities of isotopically labeled mass spectrometry data. It was designed
 #' to work with input data from
 #' \href{https://elucidatainc.github.io/ElMaven/}{El-MAVEN} and
-#' \href{http://maven.princeton.edu}{MAVEN} software.
+#' \href{https://github.com/eugenemel/maven}{MAVEN} software.
 #'
 #' C13, H2, and N15 isotopes are supported. The isotopes are detected from the
 #' \code{isotopeLabel} column of the input file. The expected label text is
@@ -725,7 +727,7 @@ natural_abundance_correction <- function(data,
     if (is.null(output_base)) {
       output_base <- FALSE
     }
-  } else if (is.character(data) & length(data) == 1) {
+  } else if (is.character(data) && length(data) == 1) {
     # Data is a string
     if (!file.exists(data)) {
       stop(sprintf("Unable to find file '%s'", path))
@@ -767,7 +769,7 @@ natural_abundance_correction <- function(data,
   if (!is.null(purity)) {
     if (!is.numeric(resolution_defined_at)) {
       stop("'purity' must be a number")
-    } else if ((purity < 0) | (purity > 1)) {
+    } else if ((purity < 0) || (purity > 1)) {
       stop("'purity' must be between 0 and 1")
     }
   }
@@ -776,8 +778,8 @@ natural_abundance_correction <- function(data,
   sample_col_names <- names(input_data$cleaned)[
     which(!(tolower(names(input_data$cleaned))
     %in% tolower(
-        c("compound", "formula", "isotope_label", "label_index", "metaGroupId")
-      )))
+      c("compound", "formula", "isotope_label", "label_index", "metaGroupId")
+    )))
   ]
 
   if (!(input_data$isotope %in% names(default_purity))) {

@@ -38,9 +38,11 @@ Natural Abundance deuterium isotope correction for one metabolite
 }
 \examples{
 \dontrun{
-nitrogen_isotope_correction(formula = "C23H38N7O17P3S",
-                             datamatrix = DataMatrix,
-                             label = c(0, 1, 2, 3, 4, 5, 6, 7),
-                             Resolution = 140000)
+nitrogen_isotope_correction(
+  formula = "C23H38N7O17P3S",
+  datamatrix = DataMatrix,
+  label = c(0, 1, 2, 3, 4, 5, 6, 7),
+  Resolution = 140000
+)
 }
 }
