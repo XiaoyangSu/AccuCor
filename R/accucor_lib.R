@@ -820,8 +820,8 @@ natural_abundance_correction <- function(data,
       break
     }
     DataMatrix <- data.matrix(dplyr::select(
-      CurrentMetabolite, -.data$compound, -.data$formula,
-      -.data$isotope_label, -.data$label_index, -.data$metaGroupId
+      CurrentMetabolite, -"compound", -"formula",
+      -"isotope_label", -"label_index", -"metaGroupId"
     ))
     DataMatrix[is.na(DataMatrix)] <- 0
     if (input_data$isotope == "C") {

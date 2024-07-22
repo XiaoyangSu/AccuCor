@@ -77,8 +77,8 @@ read_elmaven <-
         dplyr::left_join(tmpInputDF,
           dplyr::select(
             compounds,
-            .data$Compound,
-            .data$Formula
+            "Compound",
+            "Formula"
           ),
           by = "Compound"
         )
@@ -91,13 +91,13 @@ read_elmaven <-
           )
         )
       tmpInputDF_1 <- dplyr::select(
-        tmpInputDF, .data$Compound,
-        .data$Formula, .data$IsotopeLabel
+        tmpInputDF, "Compound",
+        "Formula", "IsotopeLabel"
       )
       tmpInputDF_2 <- dplyr::select(
         tmpInputDF,
-        -.data$Compound, -.data$Formula,
-        -.data$IsotopeLabel
+        -"Compound", -"Formula",
+        -"IsotopeLabel"
       )
       tmpInputDF_2 <-
         dplyr::mutate_if(tmpInputDF_2, is.character, as.numeric)
